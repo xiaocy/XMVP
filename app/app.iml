@@ -101,7 +101,6 @@
     <orderEntry type="library" exported="" name="__local_jars__:E.\GitRepository\xtest\MyXMVP\app\libs\AMap_Location_V3.6.1_20171012.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:design-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="com.nineoldandroids:library:2.4.0@jar" level="project" />
-    <orderEntry type="library" exported="" name="__local_jars__:E.\GitRepository\xtest\MyXMVP\app\libs\android-support-v4.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-media-compat-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:animated-vector-drawable-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:recyclerview-v7-23.3.0" level="project" />

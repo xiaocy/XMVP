@@ -17,20 +17,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.aMap.api.location.AMapLocation;
-import com.aMap.api.location.AMapLocationClient;
-import com.aMap.api.location.AMapLocationClientOption;
-import com.aMap.api.location.AMapLocationListener;
-import com.aMap.api.maps.AMap;
-import com.aMap.api.maps.CameraUpdateFactory;
-import com.aMap.api.maps.MapView;
-import com.aMap.api.maps.model.LatLng;
-import com.aMap.api.maps.model.Marker;
-import com.aMap.api.maps.model.MarkerOptions;
-import com.aMap.api.maps.model.MyLocationStyle;
-import com.aMap.api.services.geocoder.GeocodeResult;
-import com.aMap.api.services.geocoder.GeocodeSearch;
-import com.aMap.api.services.geocoder.RegeocodeResult;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.cqgk.demo.map.R;
 import com.cqgk.demo.map.permission.HintDialogFragment;
 
@@ -91,17 +91,7 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
 
     private void initAMap(Bundle savedInstanceState) {
 
-        initLocation();//初始化定位参数
-        checkStoragePermission();//初始化请求权限，存储权限
-
-        //添加地图
-        mapView = (MapView) findViewById(R.id.map);
-        mapView.onCreate(savedInstanceState);// 此方法必须重写
-        if (aMap == null)
-            aMap = mapView.getMap();
-        init();
-
-        // 在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
+        // 此方法必须重写，在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
 
         //初始化地图控制器对象
@@ -123,7 +113,8 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
             geocoderSearch.setOnGeocodeSearchListener(this);
         }
 
-
+        initLocation();//初始化定位参数
+        checkStoragePermission();//初始化请求权限，存储权限
     }
 
     public static void launch(Activity activity) {
