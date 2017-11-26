@@ -1,10 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0ba25d</color>
-    <color name="colorPrimaryDark">#098049</color>
-    <color name="colorAccent">#ffffff</color>
 
     <color name="text_primary">#000000</color>
     <color name="text_secondary">#87000000</color>
     <color name="text_disabled">#38000000</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="label_bg_color">#47BAFE</color>
+    <color name="label_bg_yellow_color">#FFB44E</color>
+    <color name="rxpicker_colorPrimary">#000000</color>
+    <color name="rxpicker_colorPrimaryDark">#ff212121</color>
+    <color name="rxpicker_colorPrimaryAlpha">#44000000</color>
+    <color name="rxpicker_colorAccent">#FF4081</color>
+    <color name="rxpicker_black">#000</color>
+    <color name="rxpicker_width">#FFF</color>
+    <color name="gradient_start_color">#7E73FF</color>
+    <color name="gradient_center_color">#5B83FF</color>
+    <color name="gradient_end_color">#3F90FF</color>
+    <color name="main_bottom_text_color_checked">#167EF7</color>
+    <color name="glo_bg_color">#e5e5e5</color>
+    <color name="blue_pressed_color">#175EB2</color>//蓝色按钮按下的颜色
+    <color name="sign_yellow_color">#f8e71c</color>
+    <color name="packet_yellow_color">#FFEC46</color>
+    <color name="packet_white_color">#FFF6C1</color>
+
+    <color name="orange_gradient_start_color">#FFB44E</color>
+    <color name="orange_gradient_end_color">#FF793F</color>
+
+    <color name="red_gradient_start_color">#FF845E</color>
+    <color name="red_gradient_end_color">#FF4C4C</color>
+
+    <color name="red_color_1">#fe4747</color>
+
+    <color name="text_black_color_1">#333333</color>
+    <color name="text_black_color_2">#5A5A5A</color>
+    <color name="text_gray_color_1">#A5B1C3</color>
+
+    <color name="search_gray_bg_color">#F9F9F9</color>
+    <color name="search_edit_bg_color">#ececec</color>
+    <color name="edit_hint_color">#AEBACD</color>
+
+    <color name="gray_line_color">#dfdfdf</color>
+
+    <color name="gray_button_border_color">#979797</color>
+
+    <color name="red_color">#FF5E5E</color>
+    <color name="gray_bg_color_1">#E1E6EE</color>
+    <color name="gray_bg_color_2">#F5F5F5</color>
+
+    <color name="feedback_gray_color">#fafafb</color>
+
+    <color name="gray_line_color_1">#e0e0e1</color>
+
+    <color name="translucent_white_color">#80FFFFFF</color>
+
+    <color name="menu_text_color">#333333</color>//toolbar文字
+
+    <color name="transparent">#00000000</color>
+    <color name="black">#ff000000</color>
+    <color name="white">#ffffffff</color>
+    <color name="gray">#666666</color>
+    <color name="dialog_title">#ffff0000</color>
+    <color name="common_background">#f5f3f0</color>
+    <color name="txt_color_gray_3">#cbc4c6</color>
+    <color name="pink">#ff5d65</color>
+    <color name="brown">#cccccc</color>
+    <color name="pale_pink">#cbc4c6</color>
+    <color name="divider">#e8e3e3</color>
+    <color name="tabcolor">#6e686a</color>
+    <!-- [begin]crop -->
+    <color name="translucent_background">#80000000</color>
+    <color name="crop_bg">#D5D5D5</color>
+
+    <color name="crop__button_bar">#f3f3f3</color>
+    <color name="crop__button_text">#666666</color>
+    <color name="crop__selector_pressed">#1a000000</color>
+    <color name="crop__selector_focused">#77000000</color>
+    <!-- [end]crop -->
+
+    <!--Theme-->
+    <color name="red">#FF6347</color>
+    <color name="dark_red">#F4511E</color>
+    <color name="accent_red">#FF5722</color>
+    <!--Theme-->
+
+    <color name="blue">#2196F3</color>
+    <color name="dark_blue">#1976D2</color>
+    <color name="accent_blue">#448AFF</color>
+
+    <color name="background_tab_pressed">#6633B5E5</color>
+    <color name="light_grey">#ffbebebe</color>
+
+
+    <color name="white_translucent">#AAFFFFFF</color>
+    <color name="black_translucent">#B0000000</color>
+    <color name="seekbar_bg_color">#EAEAEA</color>
+    <color name="bottom_bg_color">#747474</color>
+
+    <color name="bottom_bg_color_alpha">#ef747474</color>
+
+    <color name="customer_type_divider_color">#CDCDCD</color>
+
+    <color name="deep_blue_color">#017AFF</color>
+
+    <color name="divider_gray_color">#D8D8D8</color>
+
+    <color name="lb_text_color_red">#FF1D12</color>
+    <color name="lb_text_color_yellow">#FBF606</color>
+    <color name="lb_text_color_green">#14E213 </color>
+    <color name="lb_text_color_blue">#199BFF</color>
+    <color name="lb_text_color_violet">#8C06FF</color>
+    <color name="lb_text_color_purple">#F902FF</color>
+
+
+    <array name="material_colors">
+        <item>#F11419</item>
+        <item>#FEDC32</item>
+        <item>#7FFD30</item>
+        <item>#2DFFFE </item>
+        <item>#0C33FB</item>
+        <item>#F228FC</item>
+        <item>#F20C24</item>
+    </array>
 </resources>

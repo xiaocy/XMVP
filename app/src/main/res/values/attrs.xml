@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LabelView">
+        <attr name="titleText" format="string|reference" />
+        <attr name="titleColor" format="color" />
+        <attr name="titleSize" format="dimension" />
+        <attr name="backgroupColor" format="color"></attr>
+    </declare-styleable>
+
+    <declare-styleable name="RingCircleView">
+        <attr name="innerColor" format="color" />
+        <attr name="isSelect" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="circle_imageView">
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
+        <attr name="border_overlay" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="CommonTitleBar">
+        <attr name="baseStyle">
+            <enum name="normal" value="0" />
+            <enum name="white" value="1" />
+        </attr>
+        <attr name="leftBtnIcon" format="reference" />
+        <attr name="leftBtnTxt" format="string|reference" />
+        <attr name="titleTxt" format="string|reference" />
+        <attr name="rightBtnTxt" format="string|reference" />
+        <attr name="rightBtnIcon" format="reference" />
+    </declare-styleable>
+
+
+    <declare-styleable name="PagerSlidingTabStrip">
+        <attr name="pstsIndicatorColor" format="color" />
+        <attr name="pstsUnderlineColor" format="color" />
+        <attr name="pstsDividerColor" format="color" />
+        <attr name="pstsIndicatorHeight" format="dimension" />
+        <attr name="pstsUnderlineHeight" format="dimension" />
+        <attr name="pstsDividerPadding" format="dimension" />
+        <attr name="pstsTabPaddingLeftRight" format="dimension" />
+        <attr name="pstsScrollOffset" format="dimension" />
+        <attr name="pstsTabBackground" format="reference" />
+        <attr name="pstsShouldExpand" format="boolean" />
+        <attr name="pstsTextAllCaps" format="boolean" />
+    </declare-styleable>
+
+
+    <declare-styleable name="FlowLayout">
+        <attr name="android:gravity" />
+    </declare-styleable>
+    <declare-styleable name="FlowLayout_Layout">
+        <attr name="android:layout_gravity" />
+    </declare-styleable>
+
+    <declare-styleable name="CropImageView1">
+        <attr name="cropMaskColor" format="color" />
+        <attr name="cropBorderColor" format="color" />
+        <attr name="cropBorderWidth" format="dimension" />
+        <attr name="cropFocusWidth" format="dimension" />
+        <attr name="cropFocusHeight" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="ProgressTextView">
+        <attr name="ptv_textColor" format="color" />
+        <attr name="ptv_textSize" format="dimension" />
+        <attr name="ptv_thumWidth" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="ColorSeekBar">
+        <attr name="colorSeeds" format="reference" />
+        <attr name="barHeight" format="dimension" />
+        <attr name="thumbHeight" format="dimension" />
+        <attr name="showAlphaBar" format="boolean" />
+        <attr name="alphaBarPosition" format="integer" />
+        <attr name="colorBarPosition" format="integer" />
+        <attr name="bgColor" format="color"/>
+        <attr name="barMargin" format="dimension"/>
+        <attr name="maxPosition" format="integer"/>
+        <attr name="isVertical" format="boolean"/>
+    </declare-styleable>
+    
+    <declare-styleable name="SignLoadingView">
+        <attr name="progress_color" format="color" />
+        <attr name="progress_width" format="dimension" />
+        <attr name="progress_radius" format="dimension" />
+        <attr name="load_success_color" format="color" />
+        <attr name="load_failure_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="DrawableTextView">
+        <attr name="drawableWidth" format="dimension"/>
+        <attr name="drawableHeight" format="dimension"/>
+    </declare-styleable>
+    <declare-styleable name="GifMoviewView">
+        <attr name="gif" format="reference" />
+        <attr name="paused" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="CustomTheme">
+        <attr name="gifMoviewViewStyle" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="NineGridView">
+        <attr name="ngv_singleImageSize" format="dimension"/>
+        <attr name="ngv_singleImageRatio" format="float"/>
+        <attr name="ngv_gridSpacing" format="dimension"/>
+        <attr name="ngv_maxSize" format="integer"/>
+        <attr name="ngv_mode" format="enum">
+            <enum name="fill" value="0"/>
+            <enum name="grid" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="FlipView">
+        <attr name="orientation" format="enum">
+            <enum name="vertical" value="0"/>
+            <enum name="horizontal" value="1"/>
+        </attr>
+        <attr name="overFlipMode" format="enum">
+            <enum name="glow" value="0"/>
+            <enum name="rubber_band" value="1"/>
+        </attr>
+    </declare-styleable>
+
+</resources>

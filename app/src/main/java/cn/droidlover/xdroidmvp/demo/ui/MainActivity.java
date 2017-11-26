@@ -1,11 +1,15 @@
 package cn.droidlover.xdroidmvp.demo.ui;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,13 @@ public class MainActivity extends XActivity {
     TabLayout tabLayout;
     @BindView(R.id.viewPager)
     ViewPager viewPager;
+
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+    @BindView(R.id.drawer_view)
+    LinearLayout drawerView;
+
+    private ActionBarDrawerToggle drawerToggle;
 
     List<Fragment> fragmentList = new ArrayList<>();
     String[] titles = {"首页", "干货", "妹子"};
@@ -74,5 +85,15 @@ public class MainActivity extends XActivity {
     @Override
     public Object newP() {
         return null;
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        drawerToggle = new ActionBarDrawerToggle(MainActivity.this, drawerLayout, toolbar, R.string.open, R.string.close);
+        drawerToggle.syncState();
+        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.openDrawer(drawerView);
     }
 }

@@ -42,6 +42,7 @@ public class HomeAdapter extends SimpleRecAdapter<GankResults.Item, HomeAdapter.
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final GankResults.Item item = data.get(position);
 
+        Uri uri = null;
         String type = item.getType();
         switch (type) {
             case "休息视频":
@@ -75,6 +76,7 @@ public class HomeAdapter extends SimpleRecAdapter<GankResults.Item, HomeAdapter.
                 });
                 break;
             default:
+
                 holder.rlMessage.setVisibility(View.VISIBLE);
                 holder.ivPart.setVisibility(View.GONE);
                 holder.ivVedio.setVisibility(View.GONE);
@@ -87,21 +89,16 @@ public class HomeAdapter extends SimpleRecAdapter<GankResults.Item, HomeAdapter.
                         }
                     }
                 });
-                break;
-        }
-        Uri uri = null;
-        switch (item.getType()) {
-            case "Android":
-                holder.ivType.setImageResource(R.mipmap.android_icon);
-                break;
-            case "iOS":
-                holder.ivType.setImageResource(R.mipmap.ios_icon);
-                break;
-            case "前端":
-                holder.ivType.setImageResource(R.mipmap.js_icon);
-                break;
-            case "拓展资源":
-                holder.ivType.setImageResource(R.mipmap.other_icon);
+                if("Android".equals(type)){
+                    holder.ivType.setImageResource(R.mipmap.android_icon);
+                }else if("iOS".equals(type)){
+                    holder.ivType.setImageResource(R.mipmap.ios_icon);
+                }else if("前端".equals(type)){
+                    holder.ivType.setImageResource(R.mipmap.js_icon);
+                }else if("拓展资源".equals(type)){
+                    holder.ivType.setImageResource(R.mipmap.other_icon);
+                }
+
                 break;
         }
 
