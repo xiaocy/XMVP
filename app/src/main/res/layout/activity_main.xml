@@ -321,7 +321,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/ll_edition_parent"
+                    android:id="@+id/ll_about"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:background="?android:attr/selectableItemBackground"
@@ -342,7 +342,7 @@
                         android:layout_marginLeft="18dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:text="系统升级"
+                        android:text="关于"
                         android:textColor="@color/text_black_color_1"
                         android:textSize="@dimen/main_text_size" />
 

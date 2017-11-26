@@ -34,19 +34,13 @@ public class AboutActivity extends XActivity {
         getSupportActionBar().setTitle("关于XDroidMvp");
     }
 
-    @OnClick({
-            R.id.tv_githubMvc,
-            R.id.tv_githubMvp
-    })
+    @OnClick({R.id.iv_logo})
     public void clickEvent(View view) {
         switch (view.getId()) {
-
-            case R.id.tv_githubMvc:
-                WebActivity.launch(context, "https://github.com/limedroid/XDroid", "XDroid");
+            case R.id.iv_logo:
+                WebActivity.launch(context, "http://www.baidu.com", "度娘");
                 break;
-
-            case R.id.tv_githubMvp:
-                WebActivity.launch(context, "https://github.com/limedroid/XDroidMvp", "XDroid");
+            default:
                 break;
         }
     }
