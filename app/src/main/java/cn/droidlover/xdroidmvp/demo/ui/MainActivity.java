@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.List;
 import butterknife.BindView;
 import cn.droidlover.xdroidmvp.base.XFragmentAdapter;
 import cn.droidlover.xdroidmvp.demo.R;
+import cn.droidlover.xdroidmvp.demo.view.CircleImageView;
+import cn.droidlover.xdroidmvp.imageloader.ILFactory;
 import cn.droidlover.xdroidmvp.mvp.XActivity;
 
 /**
@@ -35,6 +39,8 @@ public class MainActivity extends XActivity {
     DrawerLayout drawerLayout;
     @BindView(R.id.drawer_view)
     LinearLayout drawerView;
+    @BindView(R.id.civ_head)
+    CircleImageView headerView;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -60,7 +66,11 @@ public class MainActivity extends XActivity {
         viewPager.setOffscreenPageLimit(3);
 
         tabLayout.setupWithViewPager(viewPager);
+
+        ILFactory.getLoader().loadNet(headerView, HEAD_URL, null);
     }
+
+    private final String HEAD_URL = "http://wx.qlogo.cn/mmopen/vi_32/N1DKiaSbrcCeFibNX8ebQ9Zsw5jw9xNCvtuhDVxVjr9IMCcXQuFTww07DY3ufKxuU0LgGW0r6uavJl5VKV2uIb2g/0";
 
     @Override
     public int getLayoutId() {
@@ -94,6 +104,17 @@ public class MainActivity extends XActivity {
         drawerToggle = new ActionBarDrawerToggle(MainActivity.this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerToggle.syncState();
         drawerLayout.setDrawerListener(drawerToggle);
-        drawerLayout.openDrawer(drawerView);
+
+        // 修改侧滑菜单默认图标
+        drawerToggle.setDrawerIndicatorEnabled(false);
+        toolbar.setNavigationIcon(R.mipmap.setting);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+                //drawerLayout.openDrawer(drawerView);
+            }
+        });
+
     }
 }
