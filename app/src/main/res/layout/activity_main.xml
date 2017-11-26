@@ -65,7 +65,7 @@
                     android:layout_height="140dp"
                     android:background="@color/gray_bg_color_1">
 
-                    <cn.droidlover.xdroidmvp.demo.view.CircleImageView
+                    <com.cqgk.demo.map.view.CircleImageView
                         android:id="@+id/civ_head"
                         android:layout_width="64dp"
                         android:layout_height="64dp"
@@ -104,6 +104,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="101dp"
+                    android:visibility="invisible"
                     android:orientation="horizontal">
 
                     <RelativeLayout
@@ -217,7 +218,7 @@
                 <View style="@style/gray_line_style" />
 
                 <LinearLayout
-                    android:id="@+id/ll_cloud_parent"
+                    android:id="@+id/ll_map"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:layout_marginTop="10dp"
@@ -230,44 +231,16 @@
                         android:layout_height="22dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:src="@mipmap/menu_album_icon" />
+                        android:src="@mipmap/map_location" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="18dp"
                         android:gravity="center_vertical"
-                        android:text="云图"
+                        android:text="地图"
                         android:textColor="@color/text_black_color_1"
                         android:textSize="@dimen/main_text_size" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_promotion_parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="20dp"
-                        android:src="@mipmap/menu_activity_icon" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="18dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:text="活动"
-                        android:textColor="@color/text_black_color_1"
-                        android:textSize="@dimen/main_text_size" />
-
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -290,32 +263,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="18dp"
                         android:gravity="center_vertical"
-                        android:text="推荐给好友"
-                        android:textColor="@color/text_black_color_1"
-                        android:textSize="@dimen/main_text_size" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_feedback_parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="20dp"
-                        android:src="@mipmap/menu_feedback_icon" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="18dp"
-                        android:gravity="center_vertical"
-                        android:text="问题反馈"
+                        android:text="推荐"
                         android:textColor="@color/text_black_color_1"
                         android:textSize="@dimen/main_text_size" />
                 </LinearLayout>
@@ -386,7 +334,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="18dp"
                         android:gravity="center_vertical"
-                        android:text="设置"
+                        android:text="系统设置"
                         android:textColor="@color/text_black_color_1"
                         android:textSize="@dimen/main_text_size" />
                 </LinearLayout>
