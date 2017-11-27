@@ -37,6 +37,9 @@
         android:theme="@style/AppTheme">
 
         <!-- pkname:com.cqgk.demo.map -->
+        <!--<meta-data android:name="com.amap.api.v2.apikey" android:value="fc5dcb2fcca9a2198686b3419c933125">
+
+        </meta-data>-->
         <meta-data android:name="com.amap.api.v2.apikey" android:value="fc5dcb2fcca9a2198686b3419c933125">
         </meta-data>
 

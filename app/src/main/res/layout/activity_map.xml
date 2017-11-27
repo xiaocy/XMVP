@@ -1,41 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    tools:context="com.cqgk.demo.map.ui.MapActivity"
+    tools:ignore="MergeRootFrame">
 
-    <include layout="@layout/view_toolbar" />
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <include layout="@layout/view_toolbar" />
         <com.amap.api.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"/>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <Button
-                    android:id="@+id/locbtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="定位" />
-                <Button
-                    android:id="@+id/stobtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="动态申请存储权限"
-                    android:visibility="gone"/>
-
-            </LinearLayout>
-
-        </com.amap.api.maps.MapView>
-
-    </RelativeLayout>
-
-
-</LinearLayout>
+    </LinearLayout>
+</FrameLayout>

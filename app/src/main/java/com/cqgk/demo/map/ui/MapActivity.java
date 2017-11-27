@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -35,7 +34,6 @@ import com.cqgk.demo.map.R;
 import com.cqgk.demo.map.permission.HintDialogFragment;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import cn.droidlover.xdroidmvp.mvp.XActivity;
 import cn.droidlover.xdroidmvp.router.Router;
 
@@ -76,17 +74,10 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
 
         // 初始化高德地图
         initAMap(savedInstanceState);
-    }
 
-    @OnClick({R.id.locbtn, R.id.stobtn})
-    void onClick(View view){
-        switch (view.getId()){
-            case  R.id.locbtn:
-                checkLocationPermission();
-                break;
-            default:
-                break;
-        }
+        // 检查权限
+        checkStoragePermission();
+        checkLocationPermission();
     }
 
     private void initAMap(Bundle savedInstanceState) {
@@ -99,13 +90,13 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
             aMap = mMapView.getMap();
         }
 
-        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+       /* myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
         myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
         myLocationStyle.showMyLocation(true);// 显示定位蓝点
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
         aMap.getUiSettings().setMyLocationButtonEnabled(true); //设置默认定位按钮是否显示，非必需设置。
-        aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
+        aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。*/
 
         // 地理位置解析
         if(null == geocoderSearch){
@@ -114,7 +105,28 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
         }
 
         initLocation();//初始化定位参数
-        checkStoragePermission();//初始化请求权限，存储权限
+    }
+
+    @Override
+    public int checkPermission(String permission, int pid, int uid) {
+        return super.checkPermission(permission, pid, uid);
+    }
+
+    //定位
+    private void initLocation() {
+
+        //初始化client
+        mlocationClient = new AMapLocationClient(this.getApplicationContext());
+        // 设置定位监听
+        mlocationClient.setLocationListener(this);
+        //定位参数
+        mLocationOption = new AMapLocationClientOption();
+        //设置为高精度定位模式
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //设置为单次定位
+        mLocationOption.setOnceLocation(true);
+        //设置定位参数
+        mlocationClient.setLocationOption(mLocationOption);
     }
 
     public static void launch(Activity activity) {
@@ -238,14 +250,11 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             //没有权限，向系统申请该权限。
-            Log.i("MY","没有权限");
             requestPermission(LOCATION_PERMISSION_CODE);
         } else {
             //已经获得权限，则执行定位请求。
-            Toast.makeText(MapActivity.this, "已获取定位权限",Toast.LENGTH_SHORT).show();
-
+            //Toast.makeText(MapActivity.this, "已获取定位权限",Toast.LENGTH_SHORT).show();
             startLocation();
-
         }
     }
 
@@ -293,23 +302,6 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
                         new String[]{permission}, permissioncode);
             }
         }
-    }
-
-    //定位
-    private void initLocation() {
-
-        //初始化client
-        mlocationClient = new AMapLocationClient(this.getApplicationContext());
-        // 设置定位监听
-        mlocationClient.setLocationListener(this);
-        //定位参数
-        mLocationOption = new AMapLocationClientOption();
-        //设置为高精度定位模式
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-        //设置为单次定位
-        mLocationOption.setOnceLocation(true);
-        //设置定位参数
-        mlocationClient.setLocationOption(mLocationOption);
     }
 
     @Override
