@@ -3,6 +3,7 @@ package com.cqgk.demo.map.ui;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -227,7 +228,8 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
     @Override
     public void onMyLocationChange(android.location.Location location){
     //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取（获取地址描述数据章节有介绍）
-
+        Location lo = location;
+        Log.e("test", "onMyLocationChange: " + location.getLongitude()+"," + location.getLatitude());
     }
 
     @Override
