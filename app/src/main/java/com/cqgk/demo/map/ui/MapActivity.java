@@ -2,13 +2,9 @@ package com.cqgk.demo.map.ui;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,18 +27,19 @@ import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.cqgk.demo.map.R;
-import com.cqgk.demo.map.permission.HintDialogFragment;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import butterknife.BindView;
 import cn.droidlover.xdroidmvp.mvp.XActivity;
 import cn.droidlover.xdroidmvp.router.Router;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Administrator on 2017/11/26/0026.
  */
 
 public class MapActivity extends XActivity implements AMap.OnMapClickListener, AMap.OnMapLoadedListener, AMap.OnMapLongClickListener
-, AMap.OnMyLocationChangeListener, GeocodeSearch.OnGeocodeSearchListener, HintDialogFragment.DialogFragmentCallback,AMapLocationListener {
+, AMap.OnMyLocationChangeListener, GeocodeSearch.OnGeocodeSearchListener, AMapLocationListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -74,10 +71,18 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
 
         // 初始化高德地图
         initAMap(savedInstanceState);
+    }
 
-        // 检查权限
-        checkStoragePermission();
-        checkLocationPermission();
+    /**
+     * This is the fragment-orientated version of {@link #onResume()} that you
+     * can override to perform operations in the Activity at the same point
+     * where its fragments are resumed.  Be sure to always call through to
+     * the super-class.
+     */
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+
     }
 
     private void initAMap(Bundle savedInstanceState) {
@@ -90,13 +95,13 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
             aMap = mMapView.getMap();
         }
 
-       /* myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
-        myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
-        myLocationStyle.showMyLocation(true);// 显示定位蓝点
-        aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
+        //myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+        //myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
+        //myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
+        //myLocationStyle.showMyLocation(true);// 显示定位蓝点
+        //aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
         aMap.getUiSettings().setMyLocationButtonEnabled(true); //设置默认定位按钮是否显示，非必需设置。
-        aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。*/
+        //aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
 
         // 地理位置解析
         if(null == geocoderSearch){
@@ -105,11 +110,9 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
         }
 
         initLocation();//初始化定位参数
-    }
 
-    @Override
-    public int checkPermission(String permission, int pid, int uid) {
-        return super.checkPermission(permission, pid, uid);
+        checkLocationPermissions();
+        startLocation();
     }
 
     //定位
@@ -242,68 +245,6 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
 
     }
 
-    private void checkLocationPermission() {
-        // 检查是否有定位权限
-        // 检查权限的方法: ContextCompat.checkSelfPermission()两个参数分别是Context和权限名.
-        // 返回PERMISSION_GRANTED是有权限，PERMISSION_DENIED没有权限
-        if (ContextCompat.checkSelfPermission(MapActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            //没有权限，向系统申请该权限。
-            requestPermission(LOCATION_PERMISSION_CODE);
-        } else {
-            //已经获得权限，则执行定位请求。
-            //Toast.makeText(MapActivity.this, "已获取定位权限",Toast.LENGTH_SHORT).show();
-            startLocation();
-        }
-    }
-
-    private void checkStoragePermission() {
-        // 检查是否有存储的读写权限
-        // 检查权限的方法: ContextCompat.checkSelfPermission()两个参数分别是Context和权限名.
-        // 返回PERMISSION_GRANTED是有权限，PERMISSION_DENIED没有权限
-        if (ContextCompat.checkSelfPermission(MapActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            //没有权限，向系统申请该权限。
-            Log.i("MY","没有权限");
-            requestPermission(STORAGE_PERMISSION_CODE);
-        } else {
-            //同组的权限，只要有一个已经授权，则系统会自动授权同一组的所有权限，比如WRITE_EXTERNAL_STORAGE和READ_EXTERNAL_STORAGE
-            Toast.makeText(MapActivity.this, "已获取存储的读写权限",Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void requestPermission(int permissioncode) {
-        String permission = getPermissionString(permissioncode);
-        if (!IsEmptyOrNullString(permission)){
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MapActivity.this,
-                    permission)) {
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                if(permissioncode == LOCATION_PERMISSION_CODE) {
-                    DialogFragment newFragment = HintDialogFragment.newInstance(R.string.location_description_title,
-                            R.string.location_description_why_we_need_the_permission,
-                            permissioncode);
-                    newFragment.show(getFragmentManager(), HintDialogFragment.class.getSimpleName());
-                } else if (permissioncode == STORAGE_PERMISSION_CODE) {
-                    DialogFragment newFragment = HintDialogFragment.newInstance(R.string.storage_description_title,
-                            R.string.storage_description_why_we_need_the_permission,
-                            permissioncode);
-                    newFragment.show(getFragmentManager(), HintDialogFragment.class.getSimpleName());
-                }
-
-
-            } else {
-                Log.i("MY","返回false 不需要解释为啥要权限，可能是第一次请求，也可能是勾选了不再询问");
-                ActivityCompat.requestPermissions(MapActivity.this,
-                        new String[]{permission}, permissioncode);
-            }
-        }
-    }
-
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null
@@ -333,8 +274,13 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
      */
     private void startLocation(){
         // 启动定位
-        mlocationClient.startLocation();
-        Log.i("MY","startLocation");
+
+        if(ContextCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            checkLocationPermissions();
+        }else{
+            mlocationClient.startLocation();
+        }
     }
     /**
      * 停止定位
@@ -356,95 +302,32 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
              */
             mlocationClient.onDestroy();
             mlocationClient = null;
-            mlocationClient = null;
         }
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case LOCATION_PERMISSION_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MapActivity.this,"定位权限已获取",Toast.LENGTH_SHORT).show();
-                    Log.i("MY","定位权限已获取");
-                    startLocation();
-                } else {
-                    Toast.makeText(MapActivity.this,"定位权限被拒绝",Toast.LENGTH_SHORT).show();
-                    Log.i("MY","定位权限被拒绝");
-                    if(!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-                        DialogFragment newFragment = HintDialogFragment.newInstance(R.string.location_description_title,
-                                R.string.location_description_why_we_need_the_permission,
-                                requestCode);
-                        newFragment.show(getFragmentManager(), HintDialogFragment.class.getSimpleName());
-                        Log.i("MY","false 勾选了不再询问，并引导用户去设置中手动设置");
-
-                        return;
-                    }
-                }
-                return;
-            }
-            case STORAGE_PERMISSION_CODE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MapActivity.this,"存储权限已获取",Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MapActivity.this,"存储权限被拒绝",Toast.LENGTH_SHORT).show();
-                    Log.i("MY","定位权限被拒绝");
-                    if(!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        DialogFragment newFragment = HintDialogFragment.newInstance(R.string.storage_description_title,
-                                R.string.storage_description_why_we_need_the_permission,
-                                requestCode);
-                        newFragment.show(getFragmentManager(), HintDialogFragment.class.getSimpleName());
-                        Log.i("MY","false 勾选了不再询问，并引导用户去设置中手动设置");
-                    }
-                    return;
-                }
-            }
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
 
     public static boolean IsEmptyOrNullString(String s) {
         return (s == null) || (s.trim().length() == 0);
     }
 
-    @Override
-    public void doNegativeClick(int requestCode) {
-
+    private void checkLocationPermissions(){
+        requestRxPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
-    @Override
-    public void doPositiveClick(int requestCode) {
-        String permission = getPermissionString(requestCode);
-        if (!IsEmptyOrNullString(permission)){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                ActivityCompat.requestPermissions(MapActivity.this,
-                        new String[]{permission},
-                        requestCode);
-            }else{
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
+    //请求权限
+    private void requestRxPermissions(String... permissions) {
+        RxPermissions rxPermissions = new RxPermissions(this);
+        rxPermissions.request(permissions).subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(@NonNull Boolean granted) throws Exception {
+                if (granted){
+                    Toast.makeText(MapActivity.this, "已获取权限", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(MapActivity.this, "已拒绝一个或以上权限", Toast.LENGTH_SHORT).show();
+                }
             }
-        }
+        });
     }
 
-    private String getPermissionString(int requestCode){
-        String permission = "";
-        switch (requestCode){
-            case LOCATION_PERMISSION_CODE:
-                permission = Manifest.permission.ACCESS_FINE_LOCATION;
-                break;
-            case STORAGE_PERMISSION_CODE:
-                permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-                break;
-        }
-        return permission;
-    }
 
 }
