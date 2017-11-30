@@ -3,14 +3,12 @@ package com.cqgk.demo.map.ui;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -18,15 +16,13 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.services.geocoder.GeocodeResult;
-import com.amap.api.services.geocoder.GeocodeSearch;
-import com.amap.api.services.geocoder.RegeocodeResult;
 import com.cqgk.demo.map.R;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
@@ -39,8 +35,7 @@ import io.reactivex.functions.Consumer;
  * Created by Administrator on 2017/11/26/0026.
  */
 
-public class MapActivity extends XActivity implements AMap.OnMapClickListener, AMap.OnMapLoadedListener, AMap.OnMapLongClickListener
-, AMap.OnMyLocationChangeListener, GeocodeSearch.OnGeocodeSearchListener, AMapLocationListener {
+public class MapActivity extends XActivity implements LocationSource, AMapLocationListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -52,18 +47,10 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
     // 地图控制
     private AMap aMap;
 
-    // 地图定位蓝点
-    MyLocationStyle myLocationStyle;
-
-    // 地理位置解析
-    GeocodeSearch geocoderSearch;
-
     private AMapLocationClient mlocationClient;
     private AMapLocationClientOption mLocationOption;
     private static final int LOCATION_PERMISSION_CODE = 100;
     private static final int STORAGE_PERMISSION_CODE = 101;
-    private Button locbtn;
-    private Button stobtn;
     private Marker locMarker;
 
     @Override
@@ -103,12 +90,7 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
         //aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
         aMap.getUiSettings().setMyLocationButtonEnabled(true); //设置默认定位按钮是否显示，非必需设置。
         //aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-
-        // 地理位置解析
-        if(null == geocoderSearch){
-            geocoderSearch = new GeocodeSearch(this);
-            geocoderSearch.setOnGeocodeSearchListener(this);
-        }
+        aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_LEFT);
 
         initLocation();//初始化定位参数
 
@@ -192,22 +174,6 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
         return null;
     }
 
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-
-    }
-
-    @Override
-    public void onMapLoaded() {
-
-    }
-
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-
-    }
-
     private void initToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -223,28 +189,6 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onMyLocationChange(android.location.Location location){
-    //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取（获取地址描述数据章节有介绍）
-        Location lo = location;
-        Log.e("test", "onMyLocationChange: " + location.getLongitude()+"," + location.getLatitude());
-    }
-
-    @Override
-    public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
-
-        // 解析result获取地址描述信息
-        // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
-        //RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200,GeocodeSearch.AMAP);
-
-        //geocoderSearch.getFromLocationAsyn(query);
-    }
-
-    @Override
-    public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
-
     }
 
     @Override
@@ -332,4 +276,13 @@ public class MapActivity extends XActivity implements AMap.OnMapClickListener, A
     }
 
 
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+
+    }
+
+    @Override
+    public void deactivate() {
+
+    }
 }
