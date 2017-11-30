@@ -22,7 +22,6 @@ import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.cqgk.demo.map.R;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -90,13 +89,8 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
             aMap = mMapView.getMap();
         }
 
-        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
-        //myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
-        //myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
-        //myLocationStyle.showMyLocation(true);// 显示定位蓝点
-        //aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
         aMap.getUiSettings().setMyLocationButtonEnabled(true); //设置默认定位按钮是否显示，非必需设置。
-        //aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
+        aMap.setMyLocationEnabled(false);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_LEFT);
 
         aMap.setLocationSource(this);// 设置定位监听
@@ -104,32 +98,14 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
         aMap.setMyLocationEnabled(true);
 
-        // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
+        // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种 小飞机的那个图标
+        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
         myLocationStyle.showMyLocation(true);// 显示定位蓝点
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
 
-        initLocation();//初始化定位参数
-
         checkLocationPermissions();
         startLocation();
-    }
-
-    //定位
-    private void initLocation() {
-
-        //初始化client
-        mapLocationClient = new AMapLocationClient(this.getApplicationContext());
-        // 设置定位监听
-        mapLocationClient.setLocationListener(this);
-        //定位参数
-        mLocationOption = new AMapLocationClientOption();
-        //设置为高精度定位模式
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-        //设置为单次定位
-        mLocationOption.setOnceLocation(true);
-        //设置定位参数
-        mapLocationClient.setLocationOption(mLocationOption);
     }
 
     public static void launch(Activity activity) {
@@ -218,7 +194,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
                 double latitude = aMapLocation.getLatitude();
                 LatLng location = new LatLng(latitude, longitude);
                 changeLocation(location);
-                //mListener.onLocationChanged(aMapLocation);// 显示系统小蓝点
+                mListener.onLocationChanged(aMapLocation);// 显示系统小蓝点
 
                 StringBuilder stringBuilder = new StringBuilder();
                 //定位成功回调信息，设置相关消息
@@ -234,11 +210,11 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
     }
 
     private void changeLocation(LatLng location) {
-        if (locMarker == null){
-            locMarker = aMap.addMarker(new MarkerOptions().position(location));
-        }else{
-            locMarker.setPosition(location);
-        }
+//        if (locMarker == null){
+//            locMarker = aMap.addMarker(new MarkerOptions().position(location));
+//        }else{
+//            locMarker.setPosition(location);
+//        }
         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
     }
 
