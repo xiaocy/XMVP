@@ -3,6 +3,8 @@ package com.cqgk.demo.map.ui;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -35,7 +37,7 @@ import io.reactivex.functions.Consumer;
  * Created by Administrator on 2017/11/26/0026.
  */
 
-public class MapActivity extends XActivity implements LocationSource, AMapLocationListener {
+public class MapActivity extends XActivity implements LocationSource, AMapLocationListener, AMap.OnMyLocationChangeListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -102,7 +104,16 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
         myLocationStyle.showMyLocation(true);// 显示定位蓝点
+
+        //精度圆圈的自定义：
+        //精度圈颜色自定义方法如下
+        myLocationStyle.strokeColor(Color.argb(180, 0,40,40));//设置定位蓝点精度圆圈的边框颜色的方法。
+        myLocationStyle.radiusFillColor(Color.argb(180,0,200,100));//设置定位蓝点精度圆圈的填充颜色的方法。
+        myLocationStyle.strokeWidth(0.1f);//设置定位蓝点精度圈的边框宽度的方法。
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
+
+        // 位置改变监听
+        aMap.setOnMyLocationChangeListener(this);
 
         checkLocationPermissions();
         startLocation();
@@ -185,8 +196,23 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
     }
 
     @Override
-    public void onLocationChanged(AMapLocation aMapLocation) {
+    public void onMyLocationChange(Location location) {
 
+        //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+        LatLng ll = new LatLng(latitude, longitude);
+        changeLocation(ll);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        //定位成功回调信息，设置相关消息
+        //stringBuilder.append(type+address);
+        Toast.makeText(this,stringBuilder.toString(),Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation!=null){
             if (aMapLocation.getErrorCode()==0){
 
@@ -208,6 +234,8 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
             }
         }
     }
+
+
 
     private void changeLocation(LatLng location) {
 //        if (locMarker == null){
@@ -320,5 +348,4 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         }
         mapLocationClient = null;
     }
-
 }
