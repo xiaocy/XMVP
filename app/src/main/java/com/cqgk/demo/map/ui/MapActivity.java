@@ -23,6 +23,7 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.MyLocationStyle;
 import com.cqgk.demo.map.R;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
@@ -47,11 +48,17 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
     // 地图控制
     private AMap aMap;
 
-    private AMapLocationClient mlocationClient;
-    private AMapLocationClientOption mLocationOption;
+    private OnLocationChangedListener  mListener;
+    //声明AMapLocationClient类对象
+    public AMapLocationClient mapLocationClient;
+    //声明AMapLocationClientOption对象
+    public AMapLocationClientOption mLocationOption;
+
     private static final int LOCATION_PERMISSION_CODE = 100;
     private static final int STORAGE_PERMISSION_CODE = 101;
     private Marker locMarker;
+
+    MyLocationStyle myLocationStyle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +90,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
             aMap = mMapView.getMap();
         }
 
-        //myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
         //myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
         //myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
         //myLocationStyle.showMyLocation(true);// 显示定位蓝点
@@ -91,6 +98,16 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         aMap.getUiSettings().setMyLocationButtonEnabled(true); //设置默认定位按钮是否显示，非必需设置。
         //aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_LEFT);
+
+        aMap.setLocationSource(this);// 设置定位监听
+        aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
+        // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+        aMap.setMyLocationEnabled(true);
+
+        // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
+        myLocationStyle.showMyLocation(true);// 显示定位蓝点
+        aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
 
         initLocation();//初始化定位参数
 
@@ -102,9 +119,9 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
     private void initLocation() {
 
         //初始化client
-        mlocationClient = new AMapLocationClient(this.getApplicationContext());
+        mapLocationClient = new AMapLocationClient(this.getApplicationContext());
         // 设置定位监听
-        mlocationClient.setLocationListener(this);
+        mapLocationClient.setLocationListener(this);
         //定位参数
         mLocationOption = new AMapLocationClientOption();
         //设置为高精度定位模式
@@ -112,7 +129,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         //设置为单次定位
         mLocationOption.setOnceLocation(true);
         //设置定位参数
-        mlocationClient.setLocationOption(mLocationOption);
+        mapLocationClient.setLocationOption(mLocationOption);
     }
 
     public static void launch(Activity activity) {
@@ -193,16 +210,26 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        if (aMapLocation != null
-                && aMapLocation.getErrorCode() == 0) {
-            double longitude = aMapLocation.getLongitude();
-            double latitude = aMapLocation.getLatitude();
-            LatLng location = new LatLng(latitude, longitude);
-            changeLocation(location);
-        } else {
-            String errText = "定位失败," + aMapLocation.getErrorCode() + ": " + aMapLocation.getErrorInfo();
-            Log.e("AmapErr", errText);
-            Toast.makeText(MapActivity.this, errText, Toast.LENGTH_LONG).show();
+
+        if (aMapLocation!=null){
+            if (aMapLocation.getErrorCode()==0){
+
+                double longitude = aMapLocation.getLongitude();
+                double latitude = aMapLocation.getLatitude();
+                LatLng location = new LatLng(latitude, longitude);
+                changeLocation(location);
+                //mListener.onLocationChanged(aMapLocation);// 显示系统小蓝点
+
+                StringBuilder stringBuilder = new StringBuilder();
+                //定位成功回调信息，设置相关消息
+                int type = aMapLocation.getLocationType();
+                String address = aMapLocation.getAddress();
+                stringBuilder.append(type+address);
+                Toast.makeText(this,stringBuilder.toString(),Toast.LENGTH_SHORT).show();
+            }else {
+                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见下方错误码表。
+                Log.i("erro info：",aMapLocation.getErrorCode()+"---"+aMapLocation.getErrorInfo());
+            }
         }
     }
 
@@ -225,7 +252,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
                 != PackageManager.PERMISSION_GRANTED){
             checkLocationPermissions();
         }else{
-            mlocationClient.startLocation();
+            mapLocationClient.startLocation();
         }
     }
     /**
@@ -233,21 +260,21 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
      */
     private void stopLocation() {
         // 停止定位
-        mlocationClient.stopLocation();
+        mapLocationClient.stopLocation();
     }
 
     /**
      * 销毁定位
      */
     private void destroyLocation() {
-        if (null != mlocationClient) {
-            mlocationClient.stopLocation();
+        if (null != mapLocationClient) {
+            mapLocationClient.stopLocation();
             /**
              * 如果AMapLocationClient是在当前Activity实例化的，
              * 在Activity的onDestroy中一定要执行AMapLocationClient的onDestroy
              */
-            mlocationClient.onDestroy();
-            mlocationClient = null;
+            mapLocationClient.onDestroy();
+            mapLocationClient = null;
         }
     }
 
@@ -267,7 +294,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
             @Override
             public void accept(@NonNull Boolean granted) throws Exception {
                 if (granted){
-                    Toast.makeText(MapActivity.this, "已获取权限", Toast.LENGTH_SHORT).show();
+                    mapLocationClient.startLocation();
                 }else {
                     Toast.makeText(MapActivity.this, "已拒绝一个或以上权限", Toast.LENGTH_SHORT).show();
                 }
@@ -276,13 +303,46 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
     }
 
 
+    //激活定位
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {
+        mListener = onLocationChangedListener;
+        if (mapLocationClient==null){
+            //初始化AMapLocationClient，并绑定监听
+            mapLocationClient = new AMapLocationClient(getApplicationContext());
+
+            //初始化定位参数
+            mLocationOption = new AMapLocationClientOption();
+            //设置定位精度
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            //是否返回地址信息
+            mLocationOption.setNeedAddress(true);
+            //是否只定位一次
+            mLocationOption.setOnceLocation(true);
+            //设置是否强制刷新WIFI，默认为强制刷新
+            mLocationOption.setWifiActiveScan(true);
+            //是否允许模拟位置
+            mLocationOption.setMockEnable(false);
+            //定位时间间隔
+            //mLocationOption.setInterval(2000);
+            //给定位客户端对象设置定位参数
+            mapLocationClient.setLocationOption(mLocationOption);
+            //绑定监听
+            mapLocationClient.setLocationListener(this);
+            //开启定位
+            mapLocationClient.startLocation();
+        }
 
     }
-
+    //停止定位
     @Override
     public void deactivate() {
-
+        mListener = null;
+        if (mapLocationClient!=null){
+            mapLocationClient.stopLocation();
+            mapLocationClient.onDestroy();
+        }
+        mapLocationClient = null;
     }
+
 }
