@@ -1,12 +1,11 @@
 package com.cqgk.demo.map.ui;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,22 +21,26 @@ import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.cqgk.demo.map.R;
-import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.cqgk.demo.map.model.FarmInfo;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
-import cn.droidlover.xdroidmvp.mvp.XActivity;
 import cn.droidlover.xdroidmvp.router.Router;
-import io.reactivex.functions.Consumer;
+
 
 /**
  * Created by Administrator on 2017/11/26/0026.
  */
 
-public class MapActivity extends XActivity implements LocationSource, AMapLocationListener, AMap.OnMyLocationChangeListener {
+public class MapActivity extends XMapBaseActivity implements LocationSource, AMapLocationListener, AMap.OnMyLocationChangeListener,
+AMap.OnCameraChangeListener{
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -60,7 +63,9 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
     private Marker locMarker;
 
     MyLocationStyle myLocationStyle;
+    Boolean isFirstLoc = true;
 
+    int getZoomB = 18;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +107,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
 
         // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种 小飞机的那个图标
         myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE);
         myLocationStyle.showMyLocation(true);// 显示定位蓝点
 
         //精度圆圈的自定义：
@@ -115,7 +120,6 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         // 位置改变监听
         aMap.setOnMyLocationChangeListener(this);
 
-        checkLocationPermissions();
         startLocation();
     }
 
@@ -173,11 +177,6 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         return R.layout.activity_map;
     }
 
-    @Override
-    public Object newP() {
-        return null;
-    }
-
     private void initToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -202,13 +201,12 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         LatLng ll = new LatLng(latitude, longitude);
-        changeLocation(ll);
-
-        StringBuilder stringBuilder = new StringBuilder();
 
         //定位成功回调信息，设置相关消息
-        //stringBuilder.append(type+address);
-        Toast.makeText(this,stringBuilder.toString(),Toast.LENGTH_SHORT).show();
+        LatLng rightBottom = aMap.getProjection().fromScreenLocation(new Point(mMapView.getRight(), mMapView.getHeight()));
+        LatLng leftTop = aMap.getProjection().fromScreenLocation(new Point(0, 60));
+
+        getP().loadFarmInfos(longitude, latitude, leftTop.latitude, rightBottom.latitude, rightBottom.longitude, leftTop.longitude);
     }
 
     @Override
@@ -216,7 +214,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         if (aMapLocation!=null){
             if (aMapLocation.getErrorCode()==0){
 
-                double longitude = aMapLocation.getLongitude();
+                /*double longitude = aMapLocation.getLongitude();
                 double latitude = aMapLocation.getLatitude();
                 LatLng location = new LatLng(latitude, longitude);
                 changeLocation(location);
@@ -227,23 +225,54 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
                 int type = aMapLocation.getLocationType();
                 String address = aMapLocation.getAddress();
                 stringBuilder.append(type+address);
-                Toast.makeText(this,stringBuilder.toString(),Toast.LENGTH_SHORT).show();
-            }else {
-                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见下方错误码表。
-                Log.i("erro info：",aMapLocation.getErrorCode()+"---"+aMapLocation.getErrorInfo());
+                Toast.makeText(this,stringBuilder.toString(),Toast.LENGTH_SHORT).show();*/
+
+                //定位成功回调信息，设置相关消息
+                aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见官方定位类型表
+                aMapLocation.getLatitude();//获取纬度
+                aMapLocation.getLongitude();//获取经度
+                aMapLocation.getAccuracy();//获取精度信息
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date date = new Date(aMapLocation.getTime());
+                df.format(date);//定位时间
+                aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
+                aMapLocation.getCountry();//国家信息
+                aMapLocation.getProvince();//省信息
+                aMapLocation.getCity();//城市信息
+                aMapLocation.getDistrict();//城区信息
+                aMapLocation.getStreet();//街道信息
+                aMapLocation.getStreetNum();//街道门牌号信息
+                aMapLocation.getCityCode();//城市编码
+                aMapLocation.getAdCode();//地区编码
+
+                // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
+                if (isFirstLoc) {
+                    //设置缩放级别
+                    aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                    //将地图移动到定位点
+                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
+                    //点击定位按钮 能够将地图的中心移动到定位点
+                    mListener.onLocationChanged(aMapLocation);
+                    //获取定位信息
+                    StringBuffer buffer = new StringBuffer();
+                    buffer.append(aMapLocation.getCountry() + ""
+                            + aMapLocation.getProvince() + ""
+                            + aMapLocation.getCity() + ""
+                            + aMapLocation.getProvince() + ""
+                            + aMapLocation.getDistrict() + ""
+                            + aMapLocation.getStreet() + ""
+                            + aMapLocation.getStreetNum());
+                    Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
+                    isFirstLoc = false;
+                }
+            } else {
+                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
+                Log.e("AmapError", "location Error, ErrCode:"
+                        + aMapLocation.getErrorCode() + ", errInfo:"
+                        + aMapLocation.getErrorInfo());
+                Toast.makeText(getApplicationContext(), "定位失败", Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-
-
-    private void changeLocation(LatLng location) {
-//        if (locMarker == null){
-//            locMarker = aMap.addMarker(new MarkerOptions().position(location));
-//        }else{
-//            locMarker.setPosition(location);
-//        }
-        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
     }
 
     /**
@@ -254,7 +283,7 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
 
         if(ContextCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED){
-            checkLocationPermissions();
+            requestMapPermissions();
         }else{
             mapLocationClient.startLocation();
         }
@@ -286,26 +315,16 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
         return (s == null) || (s.trim().length() == 0);
     }
 
-    private void checkLocationPermissions(){
-        requestRxPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    //请求权限
-    private void requestRxPermissions(String... permissions) {
-        RxPermissions rxPermissions = new RxPermissions(this);
-        rxPermissions.request(permissions).subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(@NonNull Boolean granted) throws Exception {
-                if (granted){
-                    mapLocationClient.startLocation();
-                }else {
-                    Toast.makeText(MapActivity.this, "已拒绝一个或以上权限", Toast.LENGTH_SHORT).show();
-                }
+    @Override
+    public void onPermissionGranted(Boolean granted) {
+        if (granted){
+            if(null != mapLocationClient){
+                mapLocationClient.startLocation();
             }
-        });
+        }else {
+            Toast.makeText(MapActivity.this, "已拒绝一个或以上权限", Toast.LENGTH_SHORT).show();
+        }
     }
-
 
     //激活定位
     @Override
@@ -347,5 +366,33 @@ public class MapActivity extends XActivity implements LocationSource, AMapLocati
             mapLocationClient.onDestroy();
         }
         mapLocationClient = null;
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+
+    }
+
+    @Override
+    public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        if (getZoomB != (int)cameraPosition.zoom){
+
+            // 缩放比例改变
+            getZoomB = (int)cameraPosition.zoom;
+
+            //定位成功回调信息，设置相关消息
+            LatLng rightBottom = aMap.getProjection().fromScreenLocation(new Point(mMapView.getRight(), mMapView.getHeight()));
+            LatLng leftTop = aMap.getProjection().fromScreenLocation(new Point(0, 60));
+
+            AMapLocation location = mapLocationClient.getLastKnownLocation();
+            getP().loadFarmInfos(location.getLongitude(),
+                    location.getLatitude(), leftTop.latitude, rightBottom.latitude, rightBottom.longitude, leftTop.longitude);
+        }
+    }
+
+    @Override
+    public void showData(FarmInfo farmInfo) {
+        FarmInfo fif = farmInfo;
+        StringBuffer sb = new StringBuffer ();
     }
 }

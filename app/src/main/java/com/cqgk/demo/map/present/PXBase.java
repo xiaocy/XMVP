@@ -1,9 +1,8 @@
 package com.cqgk.demo.map.present;
 
 import com.cqgk.demo.map.model.FarmInfo;
-import com.cqgk.demo.map.model.GankResults;
 import com.cqgk.demo.map.net.Api;
-import com.cqgk.demo.map.ui.BasePagerFragment;
+import com.cqgk.demo.map.ui.XMapBaseActivity;
 
 import cn.droidlover.xdroidmvp.mvp.XPresent;
 import cn.droidlover.xdroidmvp.net.ApiSubscriber;
@@ -11,30 +10,10 @@ import cn.droidlover.xdroidmvp.net.NetError;
 import cn.droidlover.xdroidmvp.net.XApi;
 
 /**
- * Created by wanglei on 2016/12/31.
+ * Created by Administrator on 2017/12/1/0001.
  */
 
-public class PBasePager extends XPresent<BasePagerFragment> {
-    protected static final int PAGE_SIZE = 10;
-
-
-    public void loadData(String type, final int page) {
-        Api.getGankService().getGankData(type, PAGE_SIZE, page)
-                .compose(XApi.<GankResults>getApiTransformer())
-                .compose(XApi.<GankResults>getScheduler())
-                .compose(getV().<GankResults>bindToLifecycle())
-                .subscribe(new ApiSubscriber<GankResults>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error);
-                    }
-
-                    @Override
-                    public void onNext(GankResults gankResults) {
-                        getV().showData(page, gankResults);
-                    }
-                });
-    }
+public class PXBase extends XPresent<XMapBaseActivity> {
 
     /**
      * 获取地图数据
@@ -54,12 +33,12 @@ public class PBasePager extends XPresent<BasePagerFragment> {
                 .subscribe(new ApiSubscriber<FarmInfo>() {
                     @Override
                     protected void onFail(NetError error) {
-                        getV().showError(error);
+                        getV().onError(error);
                     }
 
                     @Override
                     public void onNext(FarmInfo results) {
-                        getV().showFarmInfo(results);
+                        getV().showData(results);
                     }
                 });
     }

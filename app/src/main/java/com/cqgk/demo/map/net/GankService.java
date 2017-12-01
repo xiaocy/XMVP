@@ -1,8 +1,11 @@
 package com.cqgk.demo.map.net;
 
+import com.cqgk.demo.map.model.FarmInfo;
 import com.cqgk.demo.map.model.GankResults;
+
 import io.reactivex.Flowable;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
@@ -15,4 +18,9 @@ public interface GankService {
     Flowable<GankResults> getGankData(@Path("type") String type,
                                       @Path("number") int pageSize,
                                       @Path("page") int pageNum);
+
+    @POST("data/{type}/{number}/{page}")
+    Flowable<FarmInfo> getFarmInfos(@Path("type") String type,
+                                          @Path("number") int pageSize,
+                                          @Path("page") int pageNum);
 }

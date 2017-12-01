@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.cqgk.demo.map.R;
+import com.cqgk.demo.map.model.FarmInfo;
 import com.cqgk.demo.map.model.GankResults;
 import com.cqgk.demo.map.present.PBasePager;
 import com.cqgk.demo.map.widget.StateView;
@@ -115,6 +116,9 @@ public abstract class BasePagerFragment extends XLazyFragment<PBasePager> {
         }
     }
 
+    public void showFarmInfo(FarmInfo farmInfo){
+
+    }
 
     @Override
     public int getLayoutId() {
