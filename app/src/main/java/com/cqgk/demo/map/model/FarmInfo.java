@@ -11,15 +11,7 @@ public class FarmInfo extends BaseModel {
     private String msg;
     private int code;
 
-    public FarmData getData() {
-        return data;
-    }
-
-    public void setData(FarmData data) {
-        this.data = data;
-    }
-
-    private FarmData data;
+    private List<Item> data;
 
     public String getMsg() {
         return msg;
@@ -37,210 +29,107 @@ public class FarmInfo extends BaseModel {
         this.code = code;
     }
 
-    public static class FarmData{
-        private List<Item> all;
-        private List<Item> nearby;
+    public List<Item> getData() {
+        return data;
+    }
 
-        public List<Item> getAll() {
-            return all;
+    public void setData(List<Item> data) {
+        this.data = data;
+    }
+
+    public static class Item {
+        /**
+         * longitude : 0
+         * latitude : 0
+         * count : 4
+         * logoUrl : http://fs.51xnb.cn/19501757-11e8-43dd-82f9-cb304dd9ff2a.jpg
+         * farmId :
+         * lastFarmRecordId :
+         * farmName :
+         * farmType :
+         * company :
+         */
+
+        private double longitude;
+        private double latitude;
+        private long count;
+        private String logoUrl;
+        private String farmId;
+        private String lastFarmRecordId;
+        private String farmName;
+        private String farmType;
+        private String company;
+
+        public double getLongitude() {
+            return longitude;
         }
 
-        public void setAll(List<Item> all) {
-            this.all = all;
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
         }
 
-        public List<Item> getNearby() {
-            return nearby;
+        public double getLatitude() {
+            return latitude;
         }
 
-        public void setNearby(List<Item> nearby) {
-            this.nearby = nearby;
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
         }
 
-        public static class Item {
-            /**
-             * id : 3629b9d5-f455-4bb6-b13a-7d7075b0f844
-             * farmName : 眉山新都化工复合肥有限公司
-             * longitude : 103.785012
-             * latitude : 30.047036
-             * userName : 王磊
-             * address : 中国四川省眉山市东坡区
-             * areaName :
-             * areaId :
-             * favorite : true
-             * imgUrl : http://fs.51xnb.cn/52b3a014-272f-42ad-b668-90f6d5a03397.jpg
-             * farmRecordId : 41e04f96-1dc7-4186-933f-00089ff70190
-             * farmType : 1
-             * company : 蛙宝生物
-             * latestDate : 2017-11-15 13:22:42
-             * ismine : false
-             * recordDetailUrl :
-             * recordCount : 1
-             * areaCount :
-             */
+        public long getCount() {
+            return count;
+        }
 
-            private String id;
-            private String farmName;
-            private double longitude;
-            private double latitude;
-            private String userName;
-            private String address;
-            private String areaName;
-            private String areaId;
-            private boolean favorite;
-            private String imgUrl;
-            private String farmRecordId;
-            private int farmType;
-            private String company;
-            private String latestDate;
-            private boolean ismine;
-            private String recordDetailUrl;
-            private int recordCount;
-            private String areaCount;
+        public void setCount(long count) {
+            this.count = count;
+        }
 
-            public String getId() {
-                return id;
-            }
+        public String getLogoUrl() {
+            return logoUrl;
+        }
 
-            public void setId(String id) {
-                this.id = id;
-            }
+        public void setLogoUrl(String logoUrl) {
+            this.logoUrl = logoUrl;
+        }
 
-            public String getFarmName() {
-                return farmName;
-            }
+        public String getFarmId() {
+            return farmId;
+        }
 
-            public void setFarmName(String farmName) {
-                this.farmName = farmName;
-            }
+        public void setFarmId(String farmId) {
+            this.farmId = farmId;
+        }
 
-            public double getLongitude() {
-                return longitude;
-            }
+        public String getLastFarmRecordId() {
+            return lastFarmRecordId;
+        }
 
-            public void setLongitude(double longitude) {
-                this.longitude = longitude;
-            }
+        public void setLastFarmRecordId(String lastFarmRecordId) {
+            this.lastFarmRecordId = lastFarmRecordId;
+        }
 
-            public double getLatitude() {
-                return latitude;
-            }
+        public String getFarmName() {
+            return farmName;
+        }
 
-            public void setLatitude(double latitude) {
-                this.latitude = latitude;
-            }
+        public void setFarmName(String farmName) {
+            this.farmName = farmName;
+        }
 
-            public String getUserName() {
-                return userName;
-            }
+        public String getFarmType() {
+            return farmType;
+        }
 
-            public void setUserName(String userName) {
-                this.userName = userName;
-            }
+        public void setFarmType(String farmType) {
+            this.farmType = farmType;
+        }
 
-            public String getAddress() {
-                return address;
-            }
+        public String getCompany() {
+            return company;
+        }
 
-            public void setAddress(String address) {
-                this.address = address;
-            }
-
-            public String getAreaName() {
-                return areaName;
-            }
-
-            public void setAreaName(String areaName) {
-                this.areaName = areaName;
-            }
-
-            public String getAreaId() {
-                return areaId;
-            }
-
-            public void setAreaId(String areaId) {
-                this.areaId = areaId;
-            }
-
-            public boolean isFavorite() {
-                return favorite;
-            }
-
-            public void setFavorite(boolean favorite) {
-                this.favorite = favorite;
-            }
-
-            public String getImgUrl() {
-                return imgUrl;
-            }
-
-            public void setImgUrl(String imgUrl) {
-                this.imgUrl = imgUrl;
-            }
-
-            public String getFarmRecordId() {
-                return farmRecordId;
-            }
-
-            public void setFarmRecordId(String farmRecordId) {
-                this.farmRecordId = farmRecordId;
-            }
-
-            public int getFarmType() {
-                return farmType;
-            }
-
-            public void setFarmType(int farmType) {
-                this.farmType = farmType;
-            }
-
-            public String getCompany() {
-                return company;
-            }
-
-            public void setCompany(String company) {
-                this.company = company;
-            }
-
-            public String getLatestDate() {
-                return latestDate;
-            }
-
-            public void setLatestDate(String latestDate) {
-                this.latestDate = latestDate;
-            }
-
-            public boolean isIsmine() {
-                return ismine;
-            }
-
-            public void setIsmine(boolean ismine) {
-                this.ismine = ismine;
-            }
-
-            public String getRecordDetailUrl() {
-                return recordDetailUrl;
-            }
-
-            public void setRecordDetailUrl(String recordDetailUrl) {
-                this.recordDetailUrl = recordDetailUrl;
-            }
-
-            public int getRecordCount() {
-                return recordCount;
-            }
-
-            public void setRecordCount(int recordCount) {
-                this.recordCount = recordCount;
-            }
-
-            public String getAreaCount() {
-                return areaCount;
-            }
-
-            public void setAreaCount(String areaCount) {
-                this.areaCount = areaCount;
-            }
+        public void setCompany(String company) {
+            this.company = company;
         }
     }
 }

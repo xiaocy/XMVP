@@ -1,15 +1,26 @@
 package com.cqgk.demo.map.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.TextPaint;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -21,15 +32,28 @@ import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.cqgk.demo.map.R;
 import com.cqgk.demo.map.model.FarmInfo;
+import com.cqgk.demo.map.utils.Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import cn.droidlover.xdroidmvp.router.Router;
@@ -52,6 +76,9 @@ AMap.OnCameraChangeListener{
     // 地图控制
     private AMap aMap;
 
+    private Bitmap markerBmp = null;
+    private Resources resources;
+
     private OnLocationChangedListener  mListener;
     //声明AMapLocationClient类对象
     public AMapLocationClient mapLocationClient;
@@ -66,12 +93,16 @@ AMap.OnCameraChangeListener{
     Boolean isFirstLoc = true;
 
     int getZoomB = 18;
+
+    private Map<MarkerOptions, Marker> markerMap = new HashMap<MarkerOptions, Marker>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // 初始化高德地图
         initAMap(savedInstanceState);
+
+        resources = getResources();
     }
 
     /**
@@ -112,8 +143,8 @@ AMap.OnCameraChangeListener{
 
         //精度圆圈的自定义：
         //精度圈颜色自定义方法如下
-        myLocationStyle.strokeColor(Color.argb(180, 0,40,40));//设置定位蓝点精度圆圈的边框颜色的方法。
-        myLocationStyle.radiusFillColor(Color.argb(180,0,200,100));//设置定位蓝点精度圆圈的填充颜色的方法。
+        myLocationStyle.strokeColor(Color.argb(100, 0,40,40));//设置定位蓝点精度圆圈的边框颜色的方法。
+        myLocationStyle.radiusFillColor(Color.argb(60,0,200,100));//设置定位蓝点精度圆圈的填充颜色的方法。
         myLocationStyle.strokeWidth(0.1f);//设置定位蓝点精度圈的边框宽度的方法。
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
 
@@ -393,6 +424,214 @@ AMap.OnCameraChangeListener{
     @Override
     public void showData(FarmInfo farmInfo) {
         FarmInfo fif = farmInfo;
-        StringBuffer sb = new StringBuffer ();
+        List<FarmInfo.Item> items = fif.getData();
+        if(Utils.isCollectionNotEmpty(items)){
+            ArrayList<MarkerOptions> options = new ArrayList<MarkerOptions>();
+            for (FarmInfo.Item it: items) {
+                MarkerOptions markerOption = new MarkerOptions();
+                LatLng ll = new LatLng(it.getLatitude(), it.getLongitude());
+                markerOption.position(ll);
+                if (1 == it.getCount()){
+
+                    // 单个田块
+                    markerOption.title(it.getFarmName()).snippet("描述");
+                }
+                markerOption.draggable(false);//设置Marker可拖动
+                //markerOption.icon(BitmapDescriptorFactory.fromBitmap(getBitmap((int)it.getCount(), "")));
+                markerOption.icon(BitmapDescriptorFactory.fromView(getLogoView(this, it.getLogoUrl(), markerOption)));
+                // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+                markerOption.setFlat(false);//设置marker平贴地图效果
+
+                //options.add(markerOption);
+                markerMap.put(markerOption, aMap.addMarker(markerOption));
+            }
+            //aMap.addMarkers(options, false);
+        }
+
+        aMap.moveCamera(CameraUpdateFactory.zoomTo(5));
+    }
+
+    public View getLogoView(final Context mContext, final String imgUrl, final MarkerOptions markerOption ) {
+        final LayoutInflater lf = this.getLayoutInflater();
+        View view = this.getLayoutInflater().inflate(R.layout.marker,null);
+        final ImageView imageView = (ImageView) view.findViewById(R.id.civ_logo);
+
+        /*
+        imageView.setTag(markerOption);
+        ILoader.Options options = new ILoader.Options(ILoader.Options.RES_NONE, ILoader.Options.RES_NONE);
+        ILFactory.getLoader().loadNet(mContext, imgUrl, options, new LoadCallback(){
+
+            @Override
+            public void onLoadReady(Bitmap bitmap){
+                MarkerOptions markerOption = (MarkerOptions)imageView.getTag();
+                LatLng ll = markerOption.getPosition();
+                markerOption.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                aMap.addMarker(markerOption);
+            };
+        });*/
+
+        SimpleTarget target = new SimpleTarget<GlideDrawable>(100,100) {
+            @Override
+            public void onResourceReady(GlideDrawable bitmap, GlideAnimation glideAnimation) {
+                // do something with the bitmap
+                // for demonstration purposes, let's just set it to an ImageView
+                imageView.setImageDrawable(bitmap);
+                if (markerMap.containsKey(markerOption)){
+                    Marker mk = markerMap.get(markerOption);
+                    mk.remove();
+
+                    MarkerOptions mkNew = new MarkerOptions();
+                    LatLng ll = new LatLng(markerOption.getPosition().latitude, markerOption.getPosition().longitude);
+                    mkNew.position(ll);
+                    mkNew.title(markerOption.getTitle());
+                    mkNew.snippet(markerOption.getSnippet());
+                    mkNew.draggable(false);//设置Marker可拖动
+                    //markerOption.icon(BitmapDescriptorFactory.fromBitmap(getBitmap((int)it.getCount(), "")));
+
+                    View view = lf.inflate(R.layout.marker,null);
+                    final ImageView imageView = (ImageView) view.findViewById(R.id.civ_logo);
+                    imageView.setImageDrawable(bitmap);
+
+                    mkNew.icon(BitmapDescriptorFactory.fromView(view));
+                    // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+                    mkNew.setFlat(false);//设置marker平贴地图效果
+
+                    markerMap.put(mkNew, aMap.addMarker(mkNew));
+                }
+            }
+        };
+
+        Glide.with(mContext)
+                .load(imgUrl)
+                //等待状态图片
+                .placeholder(R.mipmap.location)
+                //加载失败图片
+                .error(R.mipmap.location)
+                .override(100, 100)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(target);
+
+        //imageView.setImageBitmap(getBitmap(1, null));
+        //ILFactory.getLoader().loadNet(imageView, imgUrl, null);
+//        imageView.setTag();
+
+        return view;
+    }
+
+
+
+    private Bitmap getBitmap(int count, String imgUrl)
+    {
+        if(null == markerBmp)
+        if(count <= 1){
+            markerBmp = BitmapFactory.decodeResource(resources,R.mipmap.location);
+//            src = BitmapFactory.decodeResource(resources,R.drawable.b_child_poi_hl);
+
+        }else{
+            markerBmp = BitmapFactory.decodeResource(resources,R.mipmap.location);
+            // src = BitmapFactory.decodeResource(resources,R.drawable.b_child_poi_hl);
+
+        }
+
+        if( markerBmp == null )
+        {
+            return null;
+        }
+
+        if(count <= 1){
+            return markerBmp;
+        }
+
+        String strCount = String.valueOf(count);
+
+        int w = markerBmp.getWidth();
+        int h = markerBmp.getHeight();
+        //create the new blank bitmap
+        Bitmap newb = Bitmap.createBitmap( w, h, Bitmap.Config.ARGB_8888 );//创建一个新的和SRC长度宽度一样的位图
+        Canvas cv = new Canvas( newb );
+        //draw src into
+        cv.drawBitmap( markerBmp, 0, 0, null );//在 0，0坐标开始画入src
+        //draw watermark into
+        //cv.drawBitmap( watermark, w - ww + 5, h - wh + 5, null );//在src的右下角画入水印
+        TextPaint textPaint = new TextPaint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(40f);
+        textPaint.setStrokeWidth(1f);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setColor(Color.WHITE);
+        //canvas.drawBitmap(tmp, 0, 0,null);
+        Rect bounds = new Rect();
+        textPaint.getTextBounds(strCount, 0, strCount.length(), bounds);
+        cv.drawText(strCount, w/2, h/2 + bounds.height()/2, textPaint);
+
+
+        //save all clip
+        cv.save( Canvas.ALL_SAVE_FLAG );//保存
+        //store
+        cv.restore();//存储
+        return newb;
+    }
+
+    /**
+     * 去掉MarkerOverlay上所有的Marker。
+     */
+    public void removeFromMap() {
+        /*for (Marker mark : mMarkers) {
+            mark.remove();
+        }
+        centerMarker.remove();*/
+    }
+
+    /**
+     * 缩放移动地图，保证所有自定义marker在可视范围中，且地图中心点不变。
+     */
+    public void zoomToSpanWithCenter() {
+       /* if (pointList != null && pointList.size() > 0) {
+            if (aMap == null)
+                return;
+            centerMarker.setVisible(true);
+            centerMarker.showInfoWindow();
+            LatLngBounds bounds = getLatLngBounds(centerPoint, pointList);
+            aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+        }*/
+    }
+
+    //根据中心点和自定义内容获取缩放bounds
+    private LatLngBounds getLatLngBounds(LatLng centerpoint, List<LatLng> pointList) {
+        LatLngBounds.Builder b = LatLngBounds.builder();
+        if (centerpoint != null){
+            for (int i = 0; i < pointList.size(); i++) {
+                LatLng p = pointList.get(i);
+                LatLng p1 = new LatLng((centerpoint.latitude * 2) - p.latitude, (centerpoint.longitude * 2) - p.longitude);
+                b.include(p);
+                b.include(p1);
+            }
+        }
+        return b.build();
+    }
+
+    /**
+     *  缩放移动地图，保证所有自定义marker在可视范围中。
+     */
+    public void zoomToSpan() {
+       /* if (pointList != null && pointList.size() > 0) {
+            if (aMap == null)
+                return;
+            centerMarker.setVisible(false);
+            LatLngBounds bounds = getLatLngBounds(pointList);
+            aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+        }*/
+    }
+
+    /**
+     * 根据自定义内容获取缩放bounds
+     */
+    private LatLngBounds getLatLngBounds( List<LatLng> pointList) {
+        LatLngBounds.Builder b = LatLngBounds.builder();
+        for (int i = 0; i < pointList.size(); i++) {
+            LatLng p = pointList.get(i);
+            b.include(p);
+        }
+        return b.build();
     }
 }

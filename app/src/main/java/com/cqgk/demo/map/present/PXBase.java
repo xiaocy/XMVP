@@ -4,6 +4,8 @@ import com.cqgk.demo.map.model.FarmInfo;
 import com.cqgk.demo.map.net.Api;
 import com.cqgk.demo.map.ui.XMapBaseActivity;
 
+import java.util.concurrent.TimeUnit;
+
 import cn.droidlover.xdroidmvp.mvp.XPresent;
 import cn.droidlover.xdroidmvp.net.ApiSubscriber;
 import cn.droidlover.xdroidmvp.net.NetError;
@@ -30,6 +32,7 @@ public class PXBase extends XPresent<XMapBaseActivity> {
                 .compose(XApi.<FarmInfo>getApiTransformer())
                 .compose(XApi.<FarmInfo>getScheduler())
                 .compose(getV().<FarmInfo>bindToLifecycle())
+                .timeout(120, TimeUnit.SECONDS)
                 .subscribe(new ApiSubscriber<FarmInfo>() {
                     @Override
                     protected void onFail(NetError error) {
