@@ -9,7 +9,8 @@ import cn.droidlover.xdroidmvp.net.XApi;
 public class Api {
     public static final String API_BASE_URL = "http://gank.io/api/";
 
-    public static final String API_XNB_BASE_URL = "http://192.168.1.220:9007/market/";
+//    public static final String API_XNB_BASE_URL = "http://192.168.1.220:9007/market/";
+    public static final String API_XNB_BASE_URL = "http://uapptest.51xnb.cn/market/";
 
 
     private static GankService gankService;

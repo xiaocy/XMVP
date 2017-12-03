@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -47,6 +48,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.cqgk.demo.map.R;
 import com.cqgk.demo.map.model.FarmInfo;
 import com.cqgk.demo.map.utils.Utils;
+import com.cqgk.demo.map.view.CircleImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -94,6 +96,7 @@ AMap.OnCameraChangeListener{
 
     int getZoomB = 18;
 
+    private final String JUHE = "聚合";
     private Map<MarkerOptions, Marker> markerMap = new HashMap<MarkerOptions, Marker>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -435,7 +438,10 @@ AMap.OnCameraChangeListener{
 
                     // 单个田块
                     markerOption.title(it.getFarmName()).snippet("描述");
+                }else{
+                    markerOption.title(it.getCount()+"").snippet(JUHE);
                 }
+
                 markerOption.draggable(false);//设置Marker可拖动
                 //markerOption.icon(BitmapDescriptorFactory.fromBitmap(getBitmap((int)it.getCount(), "")));
                 markerOption.icon(BitmapDescriptorFactory.fromView(getLogoView(this, it.getLogoUrl(), markerOption)));
@@ -453,7 +459,7 @@ AMap.OnCameraChangeListener{
 
     public View getLogoView(final Context mContext, final String imgUrl, final MarkerOptions markerOption ) {
         final LayoutInflater lf = this.getLayoutInflater();
-        View view = this.getLayoutInflater().inflate(R.layout.marker,null);
+        final View view = this.getLayoutInflater().inflate(R.layout.marker,null);
         final ImageView imageView = (ImageView) view.findViewById(R.id.civ_logo);
 
         /*
@@ -470,7 +476,7 @@ AMap.OnCameraChangeListener{
             };
         });*/
 
-        SimpleTarget target = new SimpleTarget<GlideDrawable>(100,100) {
+        SimpleTarget target = new SimpleTarget<GlideDrawable>(40,40) {
             @Override
             public void onResourceReady(GlideDrawable bitmap, GlideAnimation glideAnimation) {
                 // do something with the bitmap
@@ -488,11 +494,18 @@ AMap.OnCameraChangeListener{
                     mkNew.draggable(false);//设置Marker可拖动
                     //markerOption.icon(BitmapDescriptorFactory.fromBitmap(getBitmap((int)it.getCount(), "")));
 
-                    View view = lf.inflate(R.layout.marker,null);
-                    final ImageView imageView = (ImageView) view.findViewById(R.id.civ_logo);
-                    imageView.setImageDrawable(bitmap);
+                    View rootView = lf.inflate(R.layout.marker,null);
+                    final CircleImageView iv = (CircleImageView) rootView.findViewById(R.id.civ_logo);
+                    iv.setImageDrawable(bitmap);
+                    iv.setBorderColor(R.color.white);
+                    iv.setBorderWidth(8);
+                    TextView tv = (TextView) rootView.findViewById(R.id.civ_num);
+                    if(JUHE.equals(mk.getSnippet())){
+                        tv.setText(mk.getTitle());
+                        tv.setVisibility(View.VISIBLE);
+                    }
 
-                    mkNew.icon(BitmapDescriptorFactory.fromView(view));
+                    mkNew.icon(BitmapDescriptorFactory.fromView(rootView));
                     // 将Marker设置为贴地显示，可以双指下拉地图查看效果
                     mkNew.setFlat(false);//设置marker平贴地图效果
 
