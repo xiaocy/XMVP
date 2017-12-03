@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:layout_width="220dp"
-    android:layout_height="220dp"
-    android:background="@color/x_yellow"
+    android:layout_width="wrap_content"
+    android:layout_height="60dp"
     >
     <com.cqgk.demo.map.view.CircleImageView
         android:id="@+id/civ_logo"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom|left"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         />
 
         <TextView
             android:id="@+id/civ_num"
             android:visibility="invisible"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:gravity="center"
-            android:layout_gravity="right|top"
+            android:layout_marginLeft="-8dp"
+            android:layout_toRightOf="@id/civ_logo"
+            android:layout_alignParentTop="true"
             android:background="@drawable/view_badge_bk"
-            android:textSize="@dimen/txt_size_18px"
+            android:textSize="@dimen/txt_size_22px"
             android:textColor="@android:color/white" />
 
-</LinearLayout>
+</RelativeLayout>
