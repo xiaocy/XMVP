@@ -5,7 +5,6 @@ import com.cqgk.demo.map.model.FarmInfo;
 import io.reactivex.Flowable;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 /**
@@ -15,9 +14,10 @@ import retrofit2.http.POST;
 public interface XnbService {
 
     @FormUrlEncoded
-    @Headers({"Content-Type:application/json","Accept:application/json","_sid:t17558290-d42a-4c60-80dd-9bb695153f6c", "_t:1512135531664"})
-    @POST("newfarmlist.do")
-    Flowable<FarmInfo> getFarmInfos(@Field("lngMax") Double lngMax,
+    //@Headers({"Content-Type:application/json","Accept:application/json","_sid:t17558290-d42a-4c60-80dd-9bb695153f6c", "_t:1512135531664"})
+    @POST("market/newfarmlist.do")
+    Flowable<FarmInfo> getFarmInfos(@Field("zoomLevel") Integer zoomLevel,
+                                    @Field("lngMax") Double lngMax,
                                     @Field("lngMin") Double lngMin,
                                     @Field("latMax") Double latMax,
                                     @Field("latMin") Double latMin,

@@ -5,17 +5,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -153,6 +148,7 @@ AMap.OnCameraChangeListener{
 
         // 位置改变监听
         aMap.setOnMyLocationChangeListener(this);
+        aMap.setOnCameraChangeListener(this);
 
         startLocation();
     }
@@ -240,7 +236,7 @@ AMap.OnCameraChangeListener{
         LatLng rightBottom = aMap.getProjection().fromScreenLocation(new Point(mMapView.getRight(), mMapView.getHeight()));
         LatLng leftTop = aMap.getProjection().fromScreenLocation(new Point(0, 60));
 
-        getP().loadFarmInfos(longitude, latitude, leftTop.latitude, rightBottom.latitude, rightBottom.longitude, leftTop.longitude);
+        getP().loadFarmInfos(4, longitude, latitude, leftTop.latitude, rightBottom.latitude, rightBottom.longitude, leftTop.longitude);
     }
 
     @Override
@@ -409,6 +405,7 @@ AMap.OnCameraChangeListener{
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        Toast.makeText(this, "当前缩放级别" + cameraPosition.zoom, Toast.LENGTH_SHORT).show();
         if (getZoomB != (int)cameraPosition.zoom){
 
             // 缩放比例改变
@@ -419,13 +416,23 @@ AMap.OnCameraChangeListener{
             LatLng leftTop = aMap.getProjection().fromScreenLocation(new Point(0, 60));
 
             AMapLocation location = mapLocationClient.getLastKnownLocation();
-            getP().loadFarmInfos(location.getLongitude(),
-                    location.getLatitude(), leftTop.latitude, rightBottom.latitude, rightBottom.longitude, leftTop.longitude);
+            getP().loadFarmInfos((int)cameraPosition.zoom, rightBottom.longitude, leftTop.longitude,
+                    leftTop.latitude, rightBottom.latitude, location.getLongitude(),
+                    location.getLatitude());
+        }
+    }
+
+    private void clearMarker(){
+        for (Map.Entry<MarkerOptions, Marker> entry : markerMap.entrySet()) {
+            if(null != entry.getValue()){
+                entry.getValue().remove();
+            }
         }
     }
 
     @Override
     public void showData(FarmInfo farmInfo) {
+        clearMarker();
         FarmInfo fif = farmInfo;
         List<FarmInfo.Item> items = fif.getData();
         if(Utils.isCollectionNotEmpty(items)){
@@ -452,9 +459,51 @@ AMap.OnCameraChangeListener{
                 markerMap.put(markerOption, aMap.addMarker(markerOption));
             }
             //aMap.addMarkers(options, false);
+
+            zoomToSpan(items);
         }
 
-        aMap.moveCamera(CameraUpdateFactory.zoomTo(5));
+        //aMap.moveCamera(CameraUpdateFactory.zoomTo(5));
+    }
+
+
+    //根据中心点和自定义内容获取缩放bounds
+    private LatLngBounds getLatLngBounds(LatLng centerpoint, List<LatLng> pointList) {
+        LatLngBounds.Builder b = LatLngBounds.builder();
+        if (centerpoint != null){
+            for (int i = 0; i < pointList.size(); i++) {
+                LatLng p = pointList.get(i);
+                LatLng p1 = new LatLng((centerpoint.latitude * 2) - p.latitude, (centerpoint.longitude * 2) - p.longitude);
+                b.include(p);
+                b.include(p1);
+            }
+        }
+        return b.build();
+    }
+
+    /**
+     *  缩放移动地图，保证所有自定义marker在可视范围中。
+     */
+    public void zoomToSpan(List<FarmInfo.Item> items) {
+        if (Utils.isCollectionNotEmpty(items) && items.size() > 1) {
+            if (aMap == null)
+                return;
+            //centerMarker.setVisible(false);
+            LatLngBounds bounds = getLatLngBounds(items);
+            aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+        }
+    }
+
+    /**
+     * 根据自定义内容获取缩放bounds
+     */
+    private LatLngBounds getLatLngBounds( List<FarmInfo.Item> items) {
+        LatLngBounds.Builder b = LatLngBounds.builder();
+        for (int i = 0; i < items.size(); i++) {
+            LatLng p = new LatLng(items.get(i).getLatitude(), items.get(i).getLongitude());
+            b.include(p);
+        }
+        return b.build();
     }
 
     public View getLogoView(final Context mContext, final String imgUrl, final MarkerOptions markerOption ) {
@@ -524,65 +573,7 @@ AMap.OnCameraChangeListener{
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(target);
 
-        //imageView.setImageBitmap(getBitmap(1, null));
-        //ILFactory.getLoader().loadNet(imageView, imgUrl, null);
-//        imageView.setTag();
-
         return view;
-    }
-
-
-
-    private Bitmap getBitmap(int count, String imgUrl)
-    {
-        if(null == markerBmp)
-        if(count <= 1){
-            markerBmp = BitmapFactory.decodeResource(resources,R.mipmap.location);
-//            src = BitmapFactory.decodeResource(resources,R.drawable.b_child_poi_hl);
-
-        }else{
-            markerBmp = BitmapFactory.decodeResource(resources,R.mipmap.location);
-            // src = BitmapFactory.decodeResource(resources,R.drawable.b_child_poi_hl);
-
-        }
-
-        if( markerBmp == null )
-        {
-            return null;
-        }
-
-        if(count <= 1){
-            return markerBmp;
-        }
-
-        String strCount = String.valueOf(count);
-
-        int w = markerBmp.getWidth();
-        int h = markerBmp.getHeight();
-        //create the new blank bitmap
-        Bitmap newb = Bitmap.createBitmap( w, h, Bitmap.Config.ARGB_8888 );//创建一个新的和SRC长度宽度一样的位图
-        Canvas cv = new Canvas( newb );
-        //draw src into
-        cv.drawBitmap( markerBmp, 0, 0, null );//在 0，0坐标开始画入src
-        //draw watermark into
-        //cv.drawBitmap( watermark, w - ww + 5, h - wh + 5, null );//在src的右下角画入水印
-        TextPaint textPaint = new TextPaint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(40f);
-        textPaint.setStrokeWidth(1f);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        textPaint.setColor(Color.WHITE);
-        //canvas.drawBitmap(tmp, 0, 0,null);
-        Rect bounds = new Rect();
-        textPaint.getTextBounds(strCount, 0, strCount.length(), bounds);
-        cv.drawText(strCount, w/2, h/2 + bounds.height()/2, textPaint);
-
-
-        //save all clip
-        cv.save( Canvas.ALL_SAVE_FLAG );//保存
-        //store
-        cv.restore();//存储
-        return newb;
     }
 
     /**
@@ -609,42 +600,4 @@ AMap.OnCameraChangeListener{
         }*/
     }
 
-    //根据中心点和自定义内容获取缩放bounds
-    private LatLngBounds getLatLngBounds(LatLng centerpoint, List<LatLng> pointList) {
-        LatLngBounds.Builder b = LatLngBounds.builder();
-        if (centerpoint != null){
-            for (int i = 0; i < pointList.size(); i++) {
-                LatLng p = pointList.get(i);
-                LatLng p1 = new LatLng((centerpoint.latitude * 2) - p.latitude, (centerpoint.longitude * 2) - p.longitude);
-                b.include(p);
-                b.include(p1);
-            }
-        }
-        return b.build();
-    }
-
-    /**
-     *  缩放移动地图，保证所有自定义marker在可视范围中。
-     */
-    public void zoomToSpan() {
-       /* if (pointList != null && pointList.size() > 0) {
-            if (aMap == null)
-                return;
-            centerMarker.setVisible(false);
-            LatLngBounds bounds = getLatLngBounds(pointList);
-            aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
-        }*/
-    }
-
-    /**
-     * 根据自定义内容获取缩放bounds
-     */
-    private LatLngBounds getLatLngBounds( List<LatLng> pointList) {
-        LatLngBounds.Builder b = LatLngBounds.builder();
-        for (int i = 0; i < pointList.size(); i++) {
-            LatLng p = pointList.get(i);
-            b.include(p);
-        }
-        return b.build();
-    }
 }

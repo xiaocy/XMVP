@@ -46,8 +46,8 @@ public class PBasePager extends XPresent<BasePagerFragment> {
      * @param minLongitude
      * @param minLatitude
      */
-    public void loadFarmInfos(double longitude, double latitude, double maxLongitude, double maxLatitude, double minLongitude, double minLatitude){
-        Api.getXnbService().getFarmInfos(maxLongitude, minLongitude, maxLatitude, minLatitude, longitude, latitude)
+    public void loadFarmInfos(Integer zoomLevel ,double longitude, double latitude, double maxLongitude, double maxLatitude, double minLongitude, double minLatitude){
+        Api.getXnbService().getFarmInfos(zoomLevel, maxLongitude, minLongitude, maxLatitude, minLatitude, longitude, latitude)
                 .compose(XApi.<FarmInfo>getApiTransformer())
                 .compose(XApi.<FarmInfo>getScheduler())
                 .compose(getV().<FarmInfo>bindToLifecycle())

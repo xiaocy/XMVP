@@ -27,8 +27,8 @@ public class PXBase extends XPresent<XMapBaseActivity> {
      * @param minLongitude
      * @param minLatitude
      */
-    public void loadFarmInfos(double longitude, double latitude, double maxLongitude, double maxLatitude, double minLongitude, double minLatitude){
-        Api.getXnbService().getFarmInfos(maxLongitude, minLongitude, maxLatitude, minLatitude, longitude, latitude)
+    public void loadFarmInfos(Integer zoomLevel, double maxLongitude, double minLongitude, double maxLatitude, double minLatitude,double longitude, double latitude){
+        Api.getXnbService().getFarmInfos(zoomLevel, maxLongitude, minLongitude, maxLatitude, minLatitude, longitude, latitude)
                 .compose(XApi.<FarmInfo>getApiTransformer())
                 .compose(XApi.<FarmInfo>getScheduler())
                 .compose(getV().<FarmInfo>bindToLifecycle())

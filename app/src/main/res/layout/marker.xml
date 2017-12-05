@@ -2,14 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="wrap_content"
-    android:layout_height="60dp"
+    android:layout_height="48dp"
     >
     <com.cqgk.demo.map.view.CircleImageView
         android:id="@+id/civ_logo"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
+
         />
 
         <TextView
