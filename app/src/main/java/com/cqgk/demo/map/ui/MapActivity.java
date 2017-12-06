@@ -162,6 +162,7 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
         aMap.setOnMyLocationChangeListener(this);
         aMap.setOnCameraChangeListener(this);
         aMap.setOnMarkerClickListener(this);
+        aMap.setOnMapClickListener(this);
 
         startLocation();
 
