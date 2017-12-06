@@ -36,11 +36,9 @@ import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.ViewTarget;
 import com.cqgk.demo.map.R;
 import com.cqgk.demo.map.model.FarmInfo;
 import com.cqgk.demo.map.utils.Utils;
@@ -50,11 +48,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import cn.droidlover.xdroidmvp.imageloader.ILFactory;
+import cn.droidlover.xdroidmvp.imageloader.ILoader;
+import cn.droidlover.xdroidmvp.imageloader.LoadCallback;
 import cn.droidlover.xdroidmvp.router.Router;
 
 
@@ -476,6 +477,7 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
                 markerOption.setFlat(false);//设置marker平贴地图效果
 
                 Marker mkk = aMap.addMarker(markerOption);
+                v.setTag(mkk);
                 markerList.add(mkk);
                 markerItemMap.put(mkk, item);
             }
@@ -528,9 +530,13 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
 
     public View getLogoView(final Context mContext, final String imgUrl, final FarmInfo.Item farmInfo ) {
         final LayoutInflater lf = this.getLayoutInflater();
-        final View view = this.getLayoutInflater().inflate(R.layout.marker,null);
-        view.setTag(farmInfo);
-        //final RoundedImageView imageView = (RoundedImageView) view.findViewById(R.id.iv_logo);
+        final View rootView = this.getLayoutInflater().inflate(R.layout.marker,null);
+        final RoundedImageView imageView = (RoundedImageView) rootView.findViewById(R.id.iv_logo);
+        TextView tv = (TextView) rootView.findViewById(R.id.civ_num);
+        if(farmInfo.getCount() > 1){
+            tv.setText(farmInfo.getCount()+"");
+            tv.setVisibility(View.VISIBLE);
+        }
 
         /*
         imageView.setTag(markerOption);
@@ -545,37 +551,15 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
                 aMap.addMarker(markerOption);
             };
         });*/
+        ViewTarget viewTarget = new ViewTarget<RoundedImageView, GlideDrawable>(imageView) {
+            @Override
+            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                this.view.setImageDrawable(resource.getCurrent());
+            }
+        };
+
 
        /* SimpleTarget target = new SimpleTarget<GlideDrawable>(40,40) {
-            @Override
-            public void onResourceReady(GlideDrawable bitmap, GlideAnimation glideAnimation) {
-                // do something with the bitmap
-                // for demonstration purposes, let's just set it to an ImageView
-                //imageView.setImageDrawable(bitmap);
-
-                MarkerOptions mkNew = new MarkerOptions();
-                mkNew.position(new LatLng(farmInfo.getLatitude(), farmInfo.getLongitude()));
-                mkNew.title(farmInfo.getFarmName());
-                mkNew.snippet("");
-                mkNew.draggable(false);//设置Marker可拖动
-
-                View rootView = lf.inflate(R.layout.marker,null);
-                final RoundedImageView iv = (RoundedImageView) rootView.findViewById(R.id.iv_logo);
-                iv.setImageDrawable(bitmap);
-                TextView tv = (TextView) rootView.findViewById(R.id.civ_num);
-                if(farmInfo.getCount() > 1){
-                    tv.setText(farmInfo.getCount()+"");
-                    tv.setVisibility(View.VISIBLE);
-                }
-
-                mkNew.icon(BitmapDescriptorFactory.fromView(rootView));
-                mkNew.setFlat(false); // 将Marker设置为贴地显示，可以双指下拉地图查看效果
-
-                Marker mll = aMap.addMarker(mkNew);
-                markerItemMap.put(mll, item);
-            }
-        };*/
-        SimpleTarget target = new SimpleTarget<GlideDrawable>(40,40) {
             @Override
             public void onResourceReady(GlideDrawable bitmap, GlideAnimation glideAnimation) {
                 // do something with the bitmap
@@ -601,9 +585,9 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
                 Marker mll = aMap.addMarker(mkNew);
                 markerItemMap.put(mll, farmInfo);
             }
-        };
+        };*/
 
-        Glide.with(mContext)
+       /* Glide.with(mContext)
                 .load(imgUrl)
                 //等待状态图片
                 .placeholder(R.mipmap.location)
@@ -611,9 +595,52 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
                 .error(R.mipmap.location)
                 .override(100, 100)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(target);
+                .into(viewTarget);*/
+        ILoader.Options options = new ILoader.Options(ILoader.Options.RES_NONE, ILoader.Options.RES_NONE);
+        ILFactory.getLoader().loadNet(mContext, imgUrl, options, new LoadCallback(){
 
-        return view;
+            @Override
+            public void onLoadReady(Bitmap bitmap){
+                /*MarkerOptions markerOption = (MarkerOptions)imageView.getTag();
+                LatLng ll = markerOption.getPosition();
+                markerOption.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                aMap.addMarker(markerOption);*/
+                if(null != farmInfo && markerItemMap.containsValue(farmInfo)){
+                    Iterator<Map.Entry<Marker, FarmInfo.Item>> iterator = markerItemMap.entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<Marker, FarmInfo.Item> entry = iterator.next();
+                        if(farmInfo.equals(entry.getValue())){
+                            if(null != entry.getKey() && !entry.getKey().isRemoved()){
+                                entry.getKey().remove();
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                MarkerOptions mkNew = new MarkerOptions();
+                mkNew.position(new LatLng(farmInfo.getLatitude(), farmInfo.getLongitude()));
+                mkNew.draggable(false);//设置Marker可拖动
+
+                View rootView = lf.inflate(R.layout.marker,null);
+                final RoundedImageView iv = (RoundedImageView) rootView.findViewById(R.id.iv_logo);
+                iv.setImageBitmap(bitmap);
+                TextView tv = (TextView) rootView.findViewById(R.id.civ_num);
+                if(farmInfo.getCount() > 1){
+                    tv.setText(farmInfo.getCount()+"");
+                    tv.setVisibility(View.VISIBLE);
+                }
+
+                mkNew.icon(BitmapDescriptorFactory.fromView(rootView));
+                mkNew.setFlat(false); // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+
+                Marker mll = aMap.addMarker(mkNew);
+                markerList.add(mll);
+                markerItemMap.put(mll, farmInfo);
+            };
+        });
+
+        return rootView;
     }
 
     /**
