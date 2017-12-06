@@ -44,7 +44,7 @@
         </meta-data>
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.MapActivity"
             android:icon="@mipmap/xdroid_logo_128"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -57,7 +57,7 @@
 
         <activity android:name=".ui.AboutActivity" />
         <activity android:name=".ui.WebActivity" />
-        <activity android:name=".ui.MapActivity" />
+        <activity android:name=".ui.MainActivity" />
     </application>
 
 </manifest>

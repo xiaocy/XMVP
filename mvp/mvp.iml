@@ -97,10 +97,11 @@
     <orderEntry type="jdk" jdkName="Android API 23 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="com.android.support:support-fragment-25.0.0" level="project" />
-    <orderEntry type="library" exported="" name="com.android.support:support-core-ui-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="com.google.code.findbugs:jsr305:3.0.1@jar" level="project" />
     <orderEntry type="library" exported="" name="com.jakewharton:butterknife-annotations:8.4.0@jar" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:support-core-ui-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:design-23.3.0" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:support-compat-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.squareup.okio:okio:1.11.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-media-compat-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:animated-vector-drawable-25.0.0" level="project" />
@@ -120,11 +121,11 @@
     <orderEntry type="library" exported="" name="com.trello.rxlifecycle2:rxlifecycle:2.0.1@jar" level="project" />
     <orderEntry type="library" exported="" name="com.github.limedroid:XStateController-v1.1.1" level="project" />
     <orderEntry type="library" exported="" name="io.reactivex.rxjava2:rxjava:2.0.1@jar" level="project" />
-    <orderEntry type="library" exported="" name="com.android.support:support-compat-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="org.reactivestreams:reactive-streams:1.0.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.squareup.retrofit2:adapter-rxjava2:2.2.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.squareup.retrofit2:retrofit:2.2.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.trello.rxlifecycle2:rxlifecycle-components-2.0.1" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:recyclerview-v7-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.github.bumptech.glide:glide:3.7.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-vector-drawable-25.0.0" level="project" />
   </component>

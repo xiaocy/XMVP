@@ -23,4 +23,8 @@ public class Utils {
 
         return false;
     }
+
+    public static boolean isStringEmpty(String src){
+        return (null == src || src.isEmpty());
+    }
 }

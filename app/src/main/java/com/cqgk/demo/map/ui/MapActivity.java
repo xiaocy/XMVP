@@ -11,10 +11,11 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
+import cn.droidlover.xdroidmvp.imageloader.ILFactory;
 import cn.droidlover.xdroidmvp.router.Router;
 
 
@@ -61,7 +63,7 @@ import cn.droidlover.xdroidmvp.router.Router;
  */
 
 public class MapActivity extends XMapBaseActivity implements LocationSource, AMapLocationListener, AMap.OnMyLocationChangeListener,
-AMap.OnCameraChangeListener{
+        AMap.OnCameraChangeListener, AMap.OnMarkerClickListener, AMap.OnMapClickListener{
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -69,6 +71,12 @@ AMap.OnCameraChangeListener{
     // 地图view
     @BindView(R.id.map)
     MapView mMapView;
+
+    private TextView popTitle;
+    private TextView popDesc;
+    private ImageView popLogo;
+
+    private View popupWindow;
 
     // 地图控制
     private AMap aMap;
@@ -82,6 +90,9 @@ AMap.OnCameraChangeListener{
     //声明AMapLocationClientOption对象
     public AMapLocationClientOption mLocationOption;
 
+    // 默认紫光信息港
+    private LatLng centerPoint = new LatLng(22.5549830000,113.9477080000);// 中心点
+
     private static final int LOCATION_PERMISSION_CODE = 100;
     private static final int STORAGE_PERMISSION_CODE = 101;
     private Marker locMarker;
@@ -91,8 +102,9 @@ AMap.OnCameraChangeListener{
 
     int getZoomB = 18;
 
-    private final String JUHE = "聚合";
     private Map<MarkerOptions, Marker> markerMap = new HashMap<MarkerOptions, Marker>();
+    private Map<Marker, FarmInfo.Item> markerItemMap = new HashMap<Marker, FarmInfo.Item>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,8 +161,18 @@ AMap.OnCameraChangeListener{
         // 位置改变监听
         aMap.setOnMyLocationChangeListener(this);
         aMap.setOnCameraChangeListener(this);
+        aMap.setOnMarkerClickListener(this);
 
         startLocation();
+
+        LayoutInflater layoutInflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        popupWindow = layoutInflater.inflate(R.layout.map_popupwindow, null);
+        popLogo = (ImageView) popupWindow.findViewById(R.id.iv_farm_logo);
+        popTitle = (TextView)popupWindow.findViewById(R.id.tv_farm_name);
+        popDesc = (TextView)popupWindow.findViewById(R.id.tv_farm_desc);
+
+        mMapView.addView(popupWindow, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL));
     }
 
     public static void launch(Activity activity) {
@@ -227,7 +249,7 @@ AMap.OnCameraChangeListener{
     @Override
     public void onMyLocationChange(Location location) {
 
-        //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取
+       /* //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         LatLng ll = new LatLng(latitude, longitude);
@@ -236,7 +258,7 @@ AMap.OnCameraChangeListener{
         LatLng rightBottom = aMap.getProjection().fromScreenLocation(new Point(mMapView.getRight(), mMapView.getHeight()));
         LatLng leftTop = aMap.getProjection().fromScreenLocation(new Point(0, 60));
 
-        getP().loadFarmInfos(4, longitude, latitude, leftTop.latitude, rightBottom.latitude, rightBottom.longitude, leftTop.longitude);
+        getP().loadFarmInfos(4, longitude, latitude, leftTop.latitude, rightBottom.latitude, rightBottom.longitude, leftTop.longitude);*/
     }
 
     @Override
@@ -278,13 +300,13 @@ AMap.OnCameraChangeListener{
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //设置缩放级别
-                    aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                    //aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
                     //将地图移动到定位点
                     aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
                     //点击定位按钮 能够将地图的中心移动到定位点
                     mListener.onLocationChanged(aMapLocation);
                     //获取定位信息
-                    StringBuffer buffer = new StringBuffer();
+                    /*StringBuffer buffer = new StringBuffer();
                     buffer.append(aMapLocation.getCountry() + ""
                             + aMapLocation.getProvince() + ""
                             + aMapLocation.getCity() + ""
@@ -292,15 +314,15 @@ AMap.OnCameraChangeListener{
                             + aMapLocation.getDistrict() + ""
                             + aMapLocation.getStreet() + ""
                             + aMapLocation.getStreetNum());
-                    Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();*/
                     isFirstLoc = false;
                 }
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                Log.e("AmapError", "location Error, ErrCode:"
+               /* Log.e("AmapError", "location Error, ErrCode:"
                         + aMapLocation.getErrorCode() + ", errInfo:"
                         + aMapLocation.getErrorInfo());
-                Toast.makeText(getApplicationContext(), "定位失败", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "定位失败", Toast.LENGTH_LONG).show();*/
             }
         }
     }
@@ -405,6 +427,7 @@ AMap.OnCameraChangeListener{
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        centerPoint = cameraPosition.target;
         Toast.makeText(this, "当前缩放级别" + cameraPosition.zoom, Toast.LENGTH_SHORT).show();
         if (getZoomB != (int)cameraPosition.zoom){
 
@@ -437,26 +460,20 @@ AMap.OnCameraChangeListener{
         List<FarmInfo.Item> items = fif.getData();
         if(Utils.isCollectionNotEmpty(items)){
             ArrayList<MarkerOptions> options = new ArrayList<MarkerOptions>();
-            for (FarmInfo.Item it: items) {
+            for (FarmInfo.Item item: items) {
                 MarkerOptions markerOption = new MarkerOptions();
-                LatLng ll = new LatLng(it.getLatitude(), it.getLongitude());
+                LatLng ll = new LatLng(item.getLatitude(), item.getLongitude());
                 markerOption.position(ll);
-                if (1 == it.getCount()){
-
-                    // 单个田块
-                    markerOption.title(it.getFarmName()).snippet("描述");
-                }else{
-                    markerOption.title(it.getCount()+"").snippet(JUHE);
-                }
-
                 markerOption.draggable(false);//设置Marker可拖动
                 //markerOption.icon(BitmapDescriptorFactory.fromBitmap(getBitmap((int)it.getCount(), "")));
-                markerOption.icon(BitmapDescriptorFactory.fromView(getLogoView(this, it.getLogoUrl(), markerOption)));
+                View v = getLogoView(this, item.getLogoUrl(), markerOption);
+                markerOption.icon(BitmapDescriptorFactory.fromView(v));
                 // 将Marker设置为贴地显示，可以双指下拉地图查看效果
                 markerOption.setFlat(false);//设置marker平贴地图效果
 
-                //options.add(markerOption);
-                markerMap.put(markerOption, aMap.addMarker(markerOption));
+                Marker mkk = aMap.addMarker(markerOption);
+                markerItemMap.put(mkk, item);
+                markerMap.put(markerOption, mkk);
             }
             //aMap.addMarkers(options, false);
 
@@ -464,21 +481,6 @@ AMap.OnCameraChangeListener{
         }
 
         //aMap.moveCamera(CameraUpdateFactory.zoomTo(5));
-    }
-
-
-    //根据中心点和自定义内容获取缩放bounds
-    private LatLngBounds getLatLngBounds(LatLng centerpoint, List<LatLng> pointList) {
-        LatLngBounds.Builder b = LatLngBounds.builder();
-        if (centerpoint != null){
-            for (int i = 0; i < pointList.size(); i++) {
-                LatLng p = pointList.get(i);
-                LatLng p1 = new LatLng((centerpoint.latitude * 2) - p.latitude, (centerpoint.longitude * 2) - p.longitude);
-                b.include(p);
-                b.include(p1);
-            }
-        }
-        return b.build();
     }
 
     /**
@@ -489,9 +491,23 @@ AMap.OnCameraChangeListener{
             if (aMap == null)
                 return;
             //centerMarker.setVisible(false);
-            LatLngBounds bounds = getLatLngBounds(items);
+            LatLngBounds bounds = getLatLngBounds(centerPoint, items);
             aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
         }
+    }
+
+    //根据中心点和自定义内容获取缩放bounds
+    private LatLngBounds getLatLngBounds(LatLng centerpoint, List<FarmInfo.Item> items) {
+        LatLngBounds.Builder b = LatLngBounds.builder();
+        if (centerpoint != null){
+            for (int i = 0; i < items.size(); i++) {
+                LatLng p = new LatLng(items.get(i).getLatitude(), items.get(i).getLongitude());
+                LatLng p1 = new LatLng((centerpoint.latitude * 2) - p.latitude, (centerpoint.longitude * 2) - p.longitude);
+                b.include(p);
+                b.include(p1);
+            }
+        }
+        return b.build();
     }
 
     /**
@@ -533,7 +549,9 @@ AMap.OnCameraChangeListener{
                 imageView.setImageDrawable(bitmap);
                 if (markerMap.containsKey(markerOption)){
                     Marker mk = markerMap.get(markerOption);
+                    FarmInfo.Item item = markerItemMap.get(mk);
                     mk.remove();
+                    markerItemMap.remove(mk);
 
                     MarkerOptions mkNew = new MarkerOptions();
                     LatLng ll = new LatLng(markerOption.getPosition().latitude, markerOption.getPosition().longitude);
@@ -549,8 +567,8 @@ AMap.OnCameraChangeListener{
                     iv.setBorderColor(R.color.white);
                     iv.setBorderWidth(8);
                     TextView tv = (TextView) rootView.findViewById(R.id.civ_num);
-                    if(JUHE.equals(mk.getSnippet())){
-                        tv.setText(mk.getTitle());
+                    if(item.getCount() > 1){
+                        tv.setText(item.getCount()+"");
                         tv.setVisibility(View.VISIBLE);
                     }
 
@@ -558,7 +576,9 @@ AMap.OnCameraChangeListener{
                     // 将Marker设置为贴地显示，可以双指下拉地图查看效果
                     mkNew.setFlat(false);//设置marker平贴地图效果
 
-                    markerMap.put(mkNew, aMap.addMarker(mkNew));
+                    Marker mll = aMap.addMarker(mkNew);
+                    markerMap.put(mkNew, mll);
+                    markerItemMap.put(mll, item);
                 }
             }
         };
@@ -600,4 +620,29 @@ AMap.OnCameraChangeListener{
         }*/
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        FarmInfo.Item item = markerItemMap.get(marker);
+        if(!Utils.isStringEmpty(item.getLogoUrl())){
+            ILFactory.getLoader().loadNet(popLogo, item.getLogoUrl(), null);
+        }
+
+        if(!Utils.isStringEmpty(item.getFarmName())){
+            popTitle.setText(item.getFarmName());
+        }
+
+        popDesc.setText(String.valueOf(item.getCount()));
+        //infoPopupWindow.showAtLocation(markerView.get(marker), Gravity.CENTER, 0, 0);
+        popupWindow.setVisibility(View.VISIBLE);
+        return false;
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if(null != popupWindow){
+            if(View.VISIBLE == popupWindow.getVisibility()){
+                popupWindow.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
 }

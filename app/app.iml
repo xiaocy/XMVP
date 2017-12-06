@@ -95,20 +95,19 @@
     <orderEntry type="jdk" jdkName="Android API 23 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="com.android.support:support-fragment-25.0.0" level="project" />
-    <orderEntry type="library" exported="" name="com.android.support:support-core-ui-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="__local_jars__:E.\GitRepository\xtest\MyXMVP\app\libs\Android_Map3D_SDK_V5.5.0_20171107.jar:unspecified@jar" level="project" />
     <orderEntry type="library" exported="" name="__local_jars__:E.\GitRepository\xtest\MyXMVP\app\libs\Volley.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" exported="" name="io.reactivex.rxjava2:rxjava:2.1.0@jar" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:cardview-v7-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="__local_jars__:E.\GitRepository\xtest\MyXMVP\app\libs\AMap_Location_V3.6.1_20171012.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:support-core-ui-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:design-23.3.0" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:support-compat-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.nineoldandroids:library:2.4.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-media-compat-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:animated-vector-drawable-25.0.0" level="project" />
-    <orderEntry type="library" exported="" name="com.android.support:recyclerview-v7-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-v4-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="com.github.limedroid:ARecyclerView-v1.1.5" level="project" />
-    <orderEntry type="library" exported="" name="com.android.support:support-annotations:25.0.0@jar" level="project" />
-    <orderEntry type="library" exported="" name="com.tbruyelle.rxpermissions2:rxpermissions-0.9.4" level="project" />
+    <orderEntry type="library" exported="" name="com.tbruyelle.rxpermissions2:rxpermissions-0.9.3" level="project" />
     <orderEntry type="library" exported="" name="com.jakewharton:butterknife-8.4.0" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-core-utils-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="io.reactivex.rxjava2:rxandroid-2.0.1" level="project" />
@@ -117,10 +116,10 @@
     <orderEntry type="library" exported="" name="com.trello.rxlifecycle2:rxlifecycle-android-2.0.1" level="project" />
     <orderEntry type="library" exported="" name="com.github.limedroid:XStateController-v1.1.1" level="project" />
     <orderEntry type="library" exported="" name="com.wang.avi:library-1.0.2" level="project" />
-    <orderEntry type="library" exported="" name="com.android.support:support-compat-25.0.0" level="project" />
-    <orderEntry type="library" exported="" name="org.reactivestreams:reactive-streams:1.0.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.alibaba:fastjson:1.2.41@jar" level="project" />
     <orderEntry type="library" exported="" name="com.trello.rxlifecycle2:rxlifecycle-components-2.0.1" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:recyclerview-v7-25.3.1" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:support-annotations:25.3.1@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-vector-drawable-25.0.0" level="project" />
     <orderEntry type="module" module-name="mvp" exported="" />
   </component>
