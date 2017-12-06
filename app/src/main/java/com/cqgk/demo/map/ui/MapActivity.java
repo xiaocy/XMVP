@@ -44,7 +44,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.cqgk.demo.map.R;
 import com.cqgk.demo.map.model.FarmInfo;
 import com.cqgk.demo.map.utils.Utils;
-import com.cqgk.demo.map.view.CircleImageView;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -526,7 +526,7 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
     public View getLogoView(final Context mContext, final String imgUrl, final MarkerOptions markerOption ) {
         final LayoutInflater lf = this.getLayoutInflater();
         final View view = this.getLayoutInflater().inflate(R.layout.marker,null);
-        final ImageView imageView = (ImageView) view.findViewById(R.id.civ_logo);
+        final ImageView imageView = (ImageView) view.findViewById(R.id.civ_logo_new);
 
         /*
         imageView.setTag(markerOption);
@@ -563,10 +563,9 @@ public class MapActivity extends XMapBaseActivity implements LocationSource, AMa
                     //markerOption.icon(BitmapDescriptorFactory.fromBitmap(getBitmap((int)it.getCount(), "")));
 
                     View rootView = lf.inflate(R.layout.marker,null);
-                    final CircleImageView iv = (CircleImageView) rootView.findViewById(R.id.civ_logo);
+                    //final CircleImageView iv = (CircleImageView) rootView.findViewById(R.id.civ_logo);
+                    final RoundedImageView iv = (RoundedImageView) rootView.findViewById(R.id.iv_logo);
                     iv.setImageDrawable(bitmap);
-                    iv.setBorderColor(R.color.white);
-                    iv.setBorderWidth(8);
                     TextView tv = (TextView) rootView.findViewById(R.id.civ_num);
                     if(item.getCount() > 1){
                         tv.setText(item.getCount()+"");
